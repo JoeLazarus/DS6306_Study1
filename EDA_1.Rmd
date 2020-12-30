@@ -178,5 +178,50 @@ IbuAbv.cor # cor test result 0.6706
 ```
 
 ```{r}
+beerbrew %>%ggplot(aes(x = Brewery_id)) + geom_bar() +
+ggtitle("Distribution of Styles") + coord_flip() + xlab("Brewery ID") + ylab("Count")
+
+brewsize <- beerbrew %>% count(Brewery_id)
+
+beerbrewsize <- merge(brewsize,beerbrew, by.x = "Brewery_id", by.y = "Brewery_id")
+head(beerbrewsize)
+
+beerbrewsize %>%ggplot(aes(x = n, color=Class)) + geom_bar() +
+ggtitle("Distribution of Styles") + xlab("#Beers per brewery") + ylab("Count")
+
+```
+
+
+US Map exercise
+
+
+```{r}
+library(maps)
+install.packages("mapproj")
+library(mapproj)
+
+lookup = data.frame(abb = state.abb, State = state.name) #makes a data frame with State name and abbreviation.
+
+BreweryMapData = breweries %>% count(State) #count up the breweries of each state.
+
+colnames(BreweryMapData)[2] = "num_breweries" #change "n" to "num_breweries"
+colnames(BreweryMapData)[1] = "abb" #change for merge
+BreweryMapData$abb <- trimws(BreweryMapData$abb)
+BreweryMapData <- BreweryMapData %>% filter(abb!='DC')
+
+BreweryMapData = merge(BreweryMapData,lookup,"abb")
+colnames(BreweryMapData)[3] = "region" #change for merge
+BreweryMapData$region <- tolower(BreweryMapData$region)
+
+states <- map_data("state")
+
+map.df <- merge(states,BreweryMapData, by="region", all.x=T)
+map.df <- map.df[order(map.df$order),]
+
+ggplot(map.df, aes(x=long,y=lat,group=group))+
+  geom_polygon(aes(fill=num_breweries))+
+  geom_path()+ 
+  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Number of Breweries by State")+
+coord_map()
 
 ```
