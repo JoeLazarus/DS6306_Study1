@@ -94,6 +94,22 @@ beerbrew %>% ggplot(aes(x=State),color=State) +
         margin = margin(.05, unit = "cm"),vjust =.5))
 ```
 
+```{r, Jason's EDA, Question 3}
+#Question 3 Address missing values in each col by dropping them
+library(mice)
+library(VIM)
+beerbrew_drop <-beerbrew %>%
+  na.omit()
+
+#heatmap of missing values
+md.pattern(beerbrew)
+
+mice_plot <- aggr(beerbrew, col=c('navyblue','yellow'),
+                  numbers=TRUE, sortVars=TRUE,
+                  labels=names(beerbrew), cex.axis=.7,
+                  gap=3, ylab=c("Missing data","Pattern"))
+
+```
 
 ```{r, Joe's EDA, Question 3}
 #Question 3 Address Missing values in each col
@@ -146,6 +162,15 @@ max.ibu
 
 ```
 
+```{r Jason's EDA, Question 5 which state has the highest abv /ibu}
+#alternate way
+beerbrew[which.max(beerbrew$ABV),]
+beerbrew[which.max(beerbrew$IBU),]
+```
+
+
+
+
 ```{r Joe's EDA, Question 6 Comment on summary statistics distribution of ABV variable}
 
 
@@ -162,6 +187,14 @@ beerbrew %>% select(ABV, State) %>% ggplot(mapping=aes(x=ABV)) +
 
 ```
 
+```{r Jason's EDA, Question 6 Start of Density plot by Beer Class}
+p <- ggplot(beerbrew, aes(x=ABV)) + 
+  geom_density()
+p
+```
+
+
+
 ```{r Joe's EDA, Question 7, Is there a relations between IBU and ABV}
 
 beerbrew %>% ggplot(mapping=aes(y=IBU, x=ABV)) + geom_point()+
@@ -176,6 +209,78 @@ IbuAbv.cor <- cor.test(beerbrew$IBU,beerbrew$ABV, method= 'pearson')
 IbuAbv.cor # cor test result 0.6706
 
 ```
+
+
+```{r Jason's EDA, Question 7, Is there a relations between IBU and ABV}
+library(ggpubr)
+#7 Scatter Plot
+#Feel free to remove
+
+r_test = cor.test(beerbrew$IBU, beerbrew$ABV)
+r_test
+
+beerbrew.mod <- lm(IBU ~ ABV, data = beerbrew) 
+summary(beerbrew.mod)
+
+ggscatter(beerbrew, x = "IBU", y = "ABV", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "IBU", ylab = "ABV") +
+  theme_economist()
+```
+
+```{r Jason's EDA, Question 8, KNN}
+library(caret)
+library(e1071)
+library(class)
+#Start of KNN
+#Work in progress
+
+# Filter out any beer style that is not an IPA or an Ale.
+beers_IPAALE <- filter(beerbrew,grepl('IPA|Ale',Style))
+beers_IPAALE <- beers_IPAALE[,-8]
+# Create a new data frame that only holds the ABV,IBU, and beer style.
+beers_IPAALE_sub <- select(beers_IPAALE,ABV,IBU,Style)
+beers_IPAALE_sub$Style <- as.character(beers_IPAALE_sub$Style)
+
+# Normalize the Beer styles to IPA or ALE
+# This loop is used to iterate through each row and then to normalize the styles to simply say IPA or Ale.
+
+for (i in 1:1534) {
+  if (is.na(str_match(beers_IPAALE_sub[i,3],".Ale"))) {
+    beers_IPAALE_sub[i,3] <- "IPA"
+  } else {
+    beers_IPAALE_sub[i,3] <- "ALE" 
+    
+  }
+}
+
+
+set.seed(877)
+splitpale = .70
+beerbrewsample <- sample(1:dim(beers_IPAALE_sub)[1],round(splitpale * dim(beers_IPAALE_sub)[1]))
+
+
+# Test and Training with 70/30 split
+knn_train <- beers_IPAALE_sub[beerbrewsample,]
+knn_test <- beers_IPAALE_sub[-beerbrewsample,]
+
+knn_train = na.omit(knn_train)
+knn_test = na.omit(knn_test)
+
+#md.pattern(knn_train)
+
+
+
+# Using only the IBU and ABV values from both the training and test sets
+# I use the beer style as the class against which the knn will search.
+knnbeer <- knn(knn_train[,1:2],knn_test[,1:2],cl=knn_train$Style,k=24,prob = TRUE)
+# The confusion matrix is used for calibrating the output of a model and examining all possible outcomes of the predictions
+ipamatrix <- confusionMatrix(table(knnbeer,knn_test$Style))
+ipamatrix
+
+```
+
 
 ```{r}
 
