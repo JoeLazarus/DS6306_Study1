@@ -200,8 +200,7 @@ summary(beerbrew.mod)
 ggscatter(beerbrew, x = "IBU", y = "ABV", 
           add = "reg.line", conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
-          xlab = "IBU", ylab = "ABV") +
-  theme_economist()
+          xlab = "IBU", ylab = "ABV")
 ```
 
 ```{r Jason's EDA, Question 8, KNN}
@@ -307,7 +306,7 @@ coord_map()
 
 ```
 
-```{r Joe exploring ratio of breweries to NIH per capita consumption data}
+```{r}
 per.capita <-  read.csv("https://github.com/rickfontenot/DS6306_Study1/raw/main/NIH_per_capita.csv", header = TRUE)
 view(per.capita)
 
