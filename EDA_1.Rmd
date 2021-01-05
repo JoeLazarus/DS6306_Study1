@@ -178,7 +178,23 @@ max.ibu
  
 
 ```
+Re-do State medians with imputed values for comparison
 
+```{r}
+state.medians <- beerbrew %>% group_by(State) %>% summarise(ABV.median = median(ABV,na.rm = TRUE),IBU.median = median(IBU,na.rm = TRUE), ABV_imputed.median = median(ABV_imputed),IBU_imputed.median = median(IBU_imputed))
+
+state.medians
+
+p_ABV = ggplot(state.medians, aes(label=State)) + 
+  geom_point(aes(ABV.median,ABV_imputed.median))
+
+p_IBU = ggplot(state.medians, aes(label=State)) + 
+  geom_point(aes(IBU.median,IBU_imputed.median))
+
+library(plotly)
+ggplotly(p_ABV) #DE shows big change in median with imputed, why?
+ggplotly(p_IBU) #ME shows big change in median with imputed, why?
+```
 ```{r Joe's EDA, Question 6 Comment on summary statistics distribution of ABV variable}
 
 
