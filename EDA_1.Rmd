@@ -325,6 +325,13 @@ brews.per.st$State <- trimws(brews.per.st$State)
 #modify beerbrew IOT summarize number of breweries by state
 brews.per.st <- beerbrew %>% group_by(State) %>% summarize(num.brews = n_distinct(Brewery_id))
 
+#trimming extra space SHOUT OUT Rick for being a homey and finding this
+brews.per.st$State <- trimws(brews.per.st$State)
+
+#modify per.capita to unfactor states for joining data tables
+per.capita %>% mutate_if(is.factor, as.character) -> per.capita
+
+
 #join two data to compare per capita consumption to state breweries
 brew.consum <- full_join(brews.per.st, per.capita, by= "State", Copy= TRUE)
 
@@ -336,7 +343,7 @@ brew.consum <- brew.consum %>% mutate(per.capita.brewery.strength =
 
 #create rankings based on the ration above
 brew.consum <- brew.consum %>%
-  mutate(rank = dense_rank((desc(per.capita.brewery.strength))))
+  mutate(per.capita.rank = dense_rank((desc(per.capita.brewery.strength))))
 
 #ordering states for preparation for plotting
 brew.consum <- brew.consum[order(brew.consum$State), ]
@@ -373,4 +380,64 @@ ratio.map <- plot_usmap(data = brew.consum, values = "per.capita.brewery.strengt
 #  ratio.map$layers[[2]]$aes_params$size <-2
 #  print(ratio.map)
 ```
+```{r, 2019 census data combined in }
 
+library(dplyr)
+library(stringr)
+library(maps)
+library(mapproj)
+
+census2019 <-  read.csv("https://raw.githubusercontent.com/rickfontenot/DS6306_Study1/main/nst-est2019.csv", header = TRUE)
+
+census2019 <- census2019[-c(1,2,3), ]
+
+census2019 <- census2019 %>% rename('State' = "ï..table.with.row.headers.in.column.A.and.column.headers.in.rows.3.through.4...leading.dots.indicate.sub.parts.")
+
+census2019 <- census2019 %>% rename("pop.2019" = "X.11")
+
+census2019 <- subset(census2019, select = c("State", "pop.2019"))
+
+census2019$State <- str_replace_all(census2019$State, "^\\.", "")
+
+rownames(census2019) <- 1:nrow(census2019)
+
+census2019 <- census2019[-c(1:5, 57:63), ]
+head(census2019)
+rownames(census2019) <- 1:nrow(census2019)
+
+replaceCommas<-function(x){
+  x<-as.numeric(gsub("\\,", "", x))
+}
+
+census2019$pop.2019 <- replaceCommas(census2019$pop.2019)
+
+census2019$State <- state.abb[match(census2019$State, state.name)]
+
+census2019$State[which(is.na(census2019$State))] <- "DC"
+
+census2019 <- census2019 %>% rename("state" = "State")
+
+brew.consum <- full_join(brew.consum, census2019, by = 'state')
+
+brew.consum <- brew.consum %>% mutate(pop.adjusted.brewery.strength = 
+                         pop.2019 * per.capita.brewery.strength) 
+
+
+#see top 10 population adjusted brewery stength
+
+top10 <- brew.consum %>% arrange(desc(pop.adjusted.brewery.strength)) %>% slice(1:10)
+
+pop.adjusted <- plot_usmap(data = brew.consum, values = "pop.adjusted.brewery.strength",
+           labels = FALSE, label_color = "white",  color ="black", alpha = 0.8,
+           size = 1) + 
+  scale_fill_continuous(low="blue", high = "red",
+  name = "Population adjusted Brewery Strength",
+  label = scales::comma) + theme(legend.position = "bottom") +
+  ggtitle("Undere Represented States Adjusted for pop size")
+
+pop.adjusted
+
+top10 %>% ggplot(aes(x=reorder(state, -pop.adjusted.brewery.strength), y = pop.adjusted.brewery.strength)) +
+  geom_bar(aes(fill= state),stat = "identity") + labs(title = "Population Adjusted Brewery Strength", x="Top 10 States", y = "State Brewery Strength * Total Pop" )
+
+```
