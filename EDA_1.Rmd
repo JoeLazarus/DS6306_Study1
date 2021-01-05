@@ -94,22 +94,6 @@ beerbrew %>% ggplot(aes(x=State),color=State) +
         margin = margin(.05, unit = "cm"),vjust =.5))
 ```
 
-```{r, Jason's EDA, Question 3}
-#Question 3 Address missing values in each col by dropping them
-library(mice)
-library(VIM)
-beerbrew_drop <-beerbrew %>%
-  na.omit()
-
-#heatmap of missing values
-md.pattern(beerbrew)
-
-mice_plot <- aggr(beerbrew, col=c('navyblue','yellow'),
-                  numbers=TRUE, sortVars=TRUE,
-                  labels=names(beerbrew), cex.axis=.7,
-                  gap=3, ylab=c("Missing data","Pattern"))
-
-```
 
 ```{r, Joe's EDA, Question 3}
 #Question 3 Address Missing values in each col
@@ -161,15 +145,6 @@ max.ibu
  
 
 ```
-
-```{r Jason's EDA, Question 5 which state has the highest abv /ibu}
-#alternate way
-beerbrew[which.max(beerbrew$ABV),]
-beerbrew[which.max(beerbrew$IBU),]
-```
-
-
-
 
 ```{r Joe's EDA, Question 6 Comment on summary statistics distribution of ABV variable}
 
@@ -281,6 +256,56 @@ ipamatrix
 
 ```
 
+
+<<<<<<< HEAD
+```{r}
+beerbrew %>%ggplot(aes(x = Brewery_id)) + geom_bar() +
+ggtitle("Distribution of Styles") + coord_flip() + xlab("Brewery ID") + ylab("Count")
+
+brewsize <- beerbrew %>% count(Brewery_id)
+
+beerbrewsize <- merge(brewsize,beerbrew, by.x = "Brewery_id", by.y = "Brewery_id")
+head(beerbrewsize)
+
+beerbrewsize %>%ggplot(aes(x = n, color=Class)) + geom_bar() +
+ggtitle("Distribution of Styles") + xlab("#Beers per brewery") + ylab("Count")
+
+```
+
+
+US Map exercise
+
+
+```{r}
+library(maps)
+install.packages("mapproj")
+library(mapproj)
+
+lookup = data.frame(abb = state.abb, State = state.name) #makes a data frame with State name and abbreviation.
+
+BreweryMapData = breweries %>% count(State) #count up the breweries of each state.
+
+colnames(BreweryMapData)[2] = "num_breweries" #change "n" to "num_breweries"
+colnames(BreweryMapData)[1] = "abb" #change for merge
+BreweryMapData$abb <- trimws(BreweryMapData$abb)
+BreweryMapData <- BreweryMapData %>% filter(abb!='DC')
+
+BreweryMapData = merge(BreweryMapData,lookup,"abb")
+colnames(BreweryMapData)[3] = "region" #change for merge
+BreweryMapData$region <- tolower(BreweryMapData$region)
+
+states <- map_data("state")
+
+map.df <- merge(states,BreweryMapData, by="region", all.x=T)
+map.df <- map.df[order(map.df$order),]
+
+ggplot(map.df, aes(x=long,y=lat,group=group))+
+  geom_polygon(aes(fill=num_breweries))+
+  geom_path()+ 
+  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Number of Breweries by State")+
+coord_map()
+
+```
 
 ```{r Joe exploring ratio of breweries to NIH per capita consumption data}
 per.capita <-  read.csv("https://github.com/rickfontenot/DS6306_Study1/raw/main/NIH_per_capita.csv", header = TRUE)
