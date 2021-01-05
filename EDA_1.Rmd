@@ -304,9 +304,9 @@ ggplot(map.df, aes(x=long,y=lat,group=group))+
   geom_path()+ 
   scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Number of Breweries by State")+
 coord_map()
-||||||| cfbe7ed
-```{r}
-=======
+
+```
+
 ```{r Joe exploring ratio of breweries to NIH per capita consumption data}
 per.capita <-  read.csv("https://github.com/rickfontenot/DS6306_Study1/raw/main/NIH_per_capita.csv", header = TRUE)
 view(per.capita)
@@ -398,5 +398,4 @@ ratio.map <- plot_usmap(data = brew.consum, values = "per.capita.brewery.strengt
 #  ratio.map$layers[[2]]$aes_params$size <-2
 #  print(ratio.map)
 ```
->>>>>>> 02cef3662664de395be7ccab5fc400249f09293f
 
