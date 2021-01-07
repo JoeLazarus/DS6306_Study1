@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 ---
 title: "EDA Final"
 author: "Rick Fontenot"
@@ -251,3 +252,285 @@ ggplot(StateMapData, aes(x=long,y=lat,group=group))+
 coord_map()
 
 ```
+||||||| 1f473ac
+=======
+---
+title: "EDA Final"
+author: "Rick Fontenot"
+date: "1/6/2021"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+For this case study we assume that our audience is the CEO and CFO of Budweiser (our client) and that they only have had one class in statistics. They have hired us to answer 7 questions and beyond those general questions we will speculate / anticipate what may be of interest to them.
+
+We will start by importing the following data for analysis:
+
+Beers.csv:
+Name: Name of the beer.
+Beer_ID: Unique identifier of the beer.
+ABV: Alcohol by volume of the beer.
+IBU: International Bitterness Units of the beer.
+Brewery_ID: Brewery id associated with the beer.
+Style: Style of the beer.
+Ounces: Ounces of beer.
+
+Breweries.csv:
+Brew_ID: Unique identifier of the brewery.
+Name: Name of the brewery.
+City: City where the brewery is located.
+State: U.S. State where the brewery is located.
+
+```{r}
+#Load Libraries needed for analysis
+library(dplyr)
+library(tidyverse)
+library(visdat)
+library(GGally)
+library(usmap)
+library(mice)
+library(VIM)
+library(plotly)
+library(ggpubr)
+library(caret)
+library(e1071)
+library(class)
+library(maps)
+library(mapproj)
+library(stringr)
+library(ggplot2) 
+library(ggthemes)
+
+```
+
+Load Theme for plots
+
+```{r}
+theme_set(theme_fivethirtyeight())
+theme_update(axis.title = element_text()) #the default for fivethirtyeight is to not show axis labels, this removes that default so we can choose to specify and display axis titles
+```
+
+Load and Merge initial data sets provided
+
+```{r}
+beers = read.csv("https://raw.githubusercontent.com/rickfontenot/DS6306_Study1/main/Beers.csv", header = TRUE)
+
+breweries = read.csv("https://raw.githubusercontent.com/rickfontenot/DS6306_Study1/main/Breweries.csv", header = TRUE)
+
+dim(beers) #2410 observations x 7 columns
+dim(breweries) #558 observations x 4 columns
+
+sum(is.na(beers$Brewery_id)) #there are no missing values on the merge var
+sum(is.na(breweries$Brew_ID)) #there are no missing values on the merge var
+
+beers <- beers %>% rename(Beer_Name = Name) #both dataframes have "Name"
+breweries <- breweries %>% rename(Brewery_Name = Name)
+
+beerbrew <- merge(beers,breweries, by.x = "Brewery_id", by.y = "Brew_ID")
+head(beerbrew)
+```
+
+Add Features to the individual beer level data frame
+
+```{r}
+beerbrew["Class"] <- ifelse(str_detect(beerbrew$Style,"IPA"),"IPA", ifelse(str_detect(beerbrew$Style,"Ale"),"Ale", ifelse(str_detect(beerbrew$Style,"Lager"),"Lager", ifelse(str_detect(beerbrew$Style,"Stout"),"Stout", ifelse(str_detect(beerbrew$Style,"Pilsner"),"Pilsner", ifelse(str_detect(beerbrew$Style,"Pilsener"),"Pilsner", ifelse(str_detect(beerbrew$Style,"Porter"),"Porter", ifelse(str_detect(beerbrew$Style,"APA"),"APA", ifelse(str_detect(beerbrew$Style,"Cider"),"Cider", ifelse(str_detect(beerbrew$Style,"Witbier"),"Witbier", ifelse(str_detect(beerbrew$Style,"Kölsch"),"Kölsch", ifelse(str_detect(beerbrew$Style,"Fruit"),"Fruit", ifelse(str_detect(beerbrew$Style,"Hefeweizen"),"Hefeweizen", ifelse(str_detect(beerbrew$Style,"Oktoberfest"),"Oktoberfest", ifelse(str_detect(beerbrew$Style,"Bitter"),"Bitter",
+"Other")))))))))))))))
+
+beerbrew %>%ggplot(aes(x = Class)) + geom_bar() +
+ggtitle("Distribution of Styles") + coord_flip() + xlab("Style") + ylab("Count")
+```
+
+Investigate NA values to determine what needs resolution
+
+```{r}
+aggr_plot <- aggr(beerbrew, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(beerbrew), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+
+marginplot(beerbrew[c(4,5)])
+
+#IBU values are missing for 42% of the beers and needs resolution, only 2.6% of beers are missing ABV, and all other variables are clean with no missing values
+```
+Method #1 for imputing NA values, with Predictive Mean Mean Matching
+
+```{r}
+tempData <- mice(beerbrew,m=5,maxit=50,meth='pmm',seed=500)
+xyplot(tempData,ABV ~ IBU,pch=18,cex=1)
+densityplot(tempData)
+
+beerbrew_imputed <- complete(tempData,1)
+head(beerbrew_imputed)
+### here I found a space between State and Character Eg " MN" ###
+
+md.pattern(beerbrew_imputed)
+
+aggr_plot <- aggr(beerbrew_imputed, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(beerbrew_imputed), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+
+#Merge imputed value columns into main data frame
+colnames(beerbrew_imputed)[4] = "ABV.pmm.imputed" 
+colnames(beerbrew_imputed)[5] = "IBU.pmm.imputed" 
+
+temp <- beerbrew_imputed %>% select(Beer_ID, ABV.pmm.imputed, IBU.pmm.imputed)
+
+#going to try and tke out space in state name
+beerbrew$State <- trimws(beerbrew$State)
+
+beerbrew <- left_join(beerbrew, temp,by = "Beer_ID")
+
+beerbrew
+
+#checking NA's
+beerbrew[which(is.na(breerbrew)),] # returns lots NA's
+beerbrew[ !complete.cases(beerbrew), ] #returns lots of NA's
+temp[ !complete(temp), ] # returns no NA's
+```
+Method #2 for imputing values: Study distributions of IBU and ABV by Class of beer rather than using predictive mean for distribution of all beer style combined
+
+```{r}
+beerbrew %>% ggplot(aes(x = Class, y = IBU)) + 
+geom_boxplot() + 
+ggtitle("Boxplot of IBU by Beer Class") + 
+xlab("Class") + ylab("IBU") + coord_flip()
+
+beerbrew %>% ggplot(aes(x = Class, y = ABV)) + 
+geom_boxplot() + 
+ggtitle("Boxplot of ABV by Beer Class") + 
+xlab("Class") + ylab("ABV") + coord_flip()
+
+#Instead of imputation method pmm, replace na with the mean IBU and ABV for the Class of beer it belongs too
+
+impute.mean <- function(x) replace(x, is.na(x), mean(x, na.rm = TRUE))
+
+beerbrew <- beerbrew %>% group_by(Class) %>%
+    mutate(
+        IBU.class.imputed = impute.mean(IBU),
+        ABV.class.imputed = impute.mean(ABV)  
+    )
+
+beerbrew %>% ggplot(aes(x = IBU.pmm.imputed, y = IBU.class.imputed)) + 
+geom_point(position = "jitter") + 
+ggtitle("IBU Imputed PMM vs. Class Mean methods") + 
+xlab("IBU (PMM imputed)") + ylab("IBU (Class Mean imputed")
+
+beerbrew %>% ggplot(aes(x = ABV.pmm.imputed, y = ABV.class.imputed)) + 
+geom_point(position = "jitter") + 
+ggtitle("ABV Imputed PMM vs. Class Mean methods") + 
+xlab("ABV (PMM imputed)") + ylab("ABV (Class Mean imputed")
+
+#checking missing values
+beerbrew[ !complete.cases(beerbrew), ]
+```
+
+Create State Level table of summary statistics
+
+```{r}
+StateData = breweries %>% count(State) #count up the breweries in each state.
+
+Original <- setNames(aggregate(cbind(IBU,ABV)~State, beerbrew, median,na.action = na.omit), c("State","IBU.median","ABV.median"))
+
+PMM <- setNames(aggregate(cbind(IBU.pmm.imputed,ABV.pmm.imputed)~State, beerbrew, median,na.action = na.omit), c("State","IBU.pmm.median","ABV.pmm.median"))
+
+Class <- setNames(aggregate(cbind(IBU.class.imputed,ABV.class.imputed)~State, beerbrew, median,na.action = na.omit), c("State","IBU.class.median","ABV.class.median"))
+
+StateData <- merge(merge(Original,PMM,all=T),Class,all=T)
+
+Brewery.count = breweries %>% count(State) #count up the breweries in each state.
+
+Brewery.count <- Brewery.count %>% rename(Breweries = n)
+
+StateData <- merge(StateData,Brewery.count)
+
+view(StateData)
+
+#show missing values
+StateData[!complete.cases(StateData), ]
+# SD = [IBU.median ; NA , ABV.Median ; NA]
+
+```
+
+Add external data and features to the State level tables including, consumption, population, and consumption per capita
+
+```{r}
+#load beer consumption per capita data
+per.capita <-  read.csv("https://github.com/rickfontenot/DS6306_Study1/raw/main/NIH_per_capita.csv", header = TRUE)
+
+#load census population data
+census2019 <-  read.csv("https://raw.githubusercontent.com/rickfontenot/DS6306_Study1/main/nst-est2019.csv", header = TRUE)
+
+#rename columns of interest and remove all others
+census2019 <- census2019 %>% rename('State' = 1)
+census2019 <- census2019 %>% rename("pop.2019" = "X.11")
+census2019 <- subset(census2019, select = c("State", "pop.2019"))
+
+#remove header rows and regions other than states
+census2019 <- census2019[-c(1,2,3), ]
+census2019 <- census2019[-c(1:5, 57:63), ]
+
+#remove leading dots to properly format State labels
+census2019$State <- str_replace_all(census2019$State, "^\\.", "")
+
+#Merge Consumption and population data
+consumption_pop <- merge(per.capita,census2019)
+
+#Add state abbreviations to merge with State Data Frame
+lookup = data.frame(abb = state.abb, State = state.name) #makes a data frame with State name and abbreviation.
+lookup$abb <- trimws(lookup$abb)
+
+#Add District of Columbia
+lookup <- lookup %>% add_row(abb= "DC", State ="District of Columbia")
+
+temp <- merge(consumption_pop,lookup)
+
+#Rename State to "abb" and trim for merge
+colnames(StateData)[1] = "abb"
+StateData$abb <- trimws(StateData$abb)
+
+StateData <- merge(StateData,temp, all=T)
+view(StateData)
+
+
+#show missing values
+StateData[!complete.cases(StateData), ]
+# SD = [IBU.median ; NA , ABV.Median ; NA]
+
+
+```
+
+Create a State Mapping data frame so that all summary statistics can be geographically plotted
+
+```{r}
+states <- map_data("state")
+colnames(states)[5] = "State"
+
+StateData$State <- tolower(StateData$State)
+view(StateData)
+
+StateMapData <- merge(states,StateData, by="State", all.x=T)
+StateMapData <- StateMapData[order(StateMapData$order),]
+
+```
+
+Start Answering Questions using data frames prepared above
+
+```{r}
+
+```
+
+For instance now you can use the mapping set to plot many variables rather than recreating, like this:
+
+```{r}
+ggplot(StateMapData, aes(x=long,y=lat,group=group))+
+  geom_polygon(aes(fill=Breweries))+
+  geom_path()+ 
+  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Number of Breweries by State")+
+coord_map()
+
+ggplot(StateMapData, aes(x=long,y=lat,group=group))+
+  geom_polygon(aes(fill=ABV.class.median))+
+  geom_path()+ 
+  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Median ABV by State")+
+coord_map()
+
+```
+>>>>>>> e0d5b73e417ecd08ec9b88f425abb2fd281c2cd0
