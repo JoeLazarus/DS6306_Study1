@@ -105,6 +105,7 @@ densityplot(tempData)
 
 beerbrew_imputed <- complete(tempData,1)
 head(beerbrew_imputed)
+### here I found a space between State and Character Eg " MN" ###
 
 md.pattern(beerbrew_imputed)
 
@@ -116,9 +117,17 @@ colnames(beerbrew_imputed)[5] = "IBU.pmm.imputed"
 
 temp <- beerbrew_imputed %>% select(Beer_ID, ABV.pmm.imputed, IBU.pmm.imputed)
 
+#going to try and tke out space in state name
+beerbrew$State <- trimws(beerbrew$State)
+
 beerbrew <- left_join(beerbrew, temp,by = "Beer_ID")
 
 beerbrew
+
+#checking NA's
+beerbrew[which(is.na(breerbrew)),] # returns lots NA's
+beerbrew[ !complete.cases(beerbrew), ] #returns lots of NA's
+temp[ !complete(temp), ] # returns no NA's
 ```
 Method #2 for imputing values: Study distributions of IBU and ABV by Class of beer rather than using predictive mean for distribution of all beer style combined
 
@@ -153,6 +162,8 @@ geom_point(position = "jitter") +
 ggtitle("ABV Imputed PMM vs. Class Mean methods") + 
 xlab("ABV (PMM imputed)") + ylab("ABV (Class Mean imputed")
 
+#checking missing values
+beerbrew[ !complete.cases(beerbrew), ]
 ```
 
 Create State Level table of summary statistics
@@ -175,6 +186,11 @@ Brewery.count <- Brewery.count %>% rename(Breweries = n)
 StateData <- merge(StateData,Brewery.count)
 
 view(StateData)
+
+#show missing values
+StateData[!complete.cases(StateData), ]
+# SD = [IBU.median ; NA , ABV.Median ; NA]
+
 ```
 
 Add external data and features to the State level tables including, consumption, population, and consumption per capita
@@ -205,6 +221,9 @@ consumption_pop <- merge(per.capita,census2019)
 lookup = data.frame(abb = state.abb, State = state.name) #makes a data frame with State name and abbreviation.
 lookup$abb <- trimws(lookup$abb)
 
+#Add District of Columbia
+lookup <- lookup %>% add_row(abb= "DC", State ="District of Columbia")
+
 temp <- merge(consumption_pop,lookup)
 
 #Rename State to "abb" and trim for merge
@@ -213,6 +232,13 @@ StateData$abb <- trimws(StateData$abb)
 
 StateData <- merge(StateData,temp, all=T)
 view(StateData)
+
+
+#show missing values
+StateData[!complete.cases(StateData), ]
+# SD = [IBU.median ; NA , ABV.Median ; NA]
+
+
 ```
 
 Create a State Mapping data frame so that all summary statistics can be geographically plotted
