@@ -294,25 +294,66 @@ imputed %>% ggplot(mapping=aes(y=IBU, x=ABV,color=Method)) + geom_point(size=0.5
 Question 4: Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
 
 ```{r}
+#use Class Mean imputed values for medians
+StateData %>% ggplot(aes(x=reorder(abb, -IBU.class.median), y=IBU.class.median)) + 
+  geom_bar(stat = "identity", position = "dodge") + theme(plot.title= element_text(hjust = 0.5),axis.text.x=element_text(angle=90,size =   rel(.6),margin = margin(.05, unit = "cm"),vjust =0)) + 
+  labs(title = "Median IBU by State", y = "Median IBU",x= 'State')
 
+StateData %>% ggplot(aes(x=reorder(abb, -ABV.class.median), y=ABV.class.median)) + 
+  geom_bar(stat = "identity", position = "dodge") + theme(plot.title= element_text(hjust = 0.5),axis.text.x=element_text(angle=90,size =   rel(.6),margin = margin(.05, unit = "cm"),vjust =0)) + 
+  labs(title = "Median ABV by State", y = "Median ABV",x= 'State')
 ```
 
 Question 5: Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
 
 ```{r}
+max.abv <- beerbrew %>% filter(ABV==max(beerbrew$ABV,na.rm=TRUE)) %>% select(Beer_Name,ABV,Class,Style,State)
+max.abv
+#Answer Colorado, Lee Hill Series Vol.5, ABV = 0.128
 
+max.ibu <- beerbrew %>% filter(IBU==max(beerbrew$IBU,na.rm=TRUE)) %>% select(Beer_Name,ABV,Class,Style,State)
+max.ibu
+#Answer Oregon, Bitter Bitch Imperial, IBU = 138
 ```
 
 Question 6: Comment on the summary statistics and distribution of the ABV variable.
 
 ```{r}
+summary(beerbrew$ABV)
+
+#Distribution of ABV Variable 
+beerbrew %>% select(ABV) %>% ggplot(mapping=aes(x= ABV)) +
+  geom_histogram(bins = 50) +  labs(title = "Distribution of Alcohol By Volume", y = "Frequency",x= 'ABV')
+
+ggplot(beerbrew, aes(x=ABV)) + 
+  geom_density()
 
 ```
 
 Question 7: Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.  Make your best judgment of a relationship and EXPLAIN your answer.
 
 ```{r}
+beerbrew %>% ggplot(mapping=aes(y=IBU, x=ABV)) + geom_point()+
+  geom_point(position=position_jitter(width=0.01),alpha=0.5)+
+  geom_smooth(method="lm",se=FALSE,size=2)+
+  labs(title="Correlation between ABV and IBU")
 
+
+# correlation test
+
+IbuAbv.cor <- cor.test(beerbrew$IBU,beerbrew$ABV, method= 'pearson')
+IbuAbv.cor # cor test result 0.6706 positive linear correlation
+
+r_test = cor.test(beerbrew$IBU, beerbrew$ABV)
+r_test
+
+beerbrew.mod <- lm(IBU ~ ABV, data = beerbrew) 
+summary(beerbrew.mod)
+
+ggscatter(beerbrew, x = "IBU", y = "ABV", 
+          add = "reg.line", conf.int = TRUE, 
+          cor.coef = TRUE, cor.method = "pearson",
+          xlab = "IBU", ylab = "ABV")
 ```
 
 Question 8: Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN classification to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand conceptually.
