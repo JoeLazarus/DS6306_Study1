@@ -232,20 +232,109 @@ StateMapData <- merge(states,StateData, by="State", all.x=T)
 StateMapData <- StateMapData[order(StateMapData$order),]
 ```
 
-Start Answering Questions using data frames prepared above
+Question 1: How many breweries are present in each state?
+
+```{r}
+#bar chart ordered by rank of most breweries
+StateData %>% ggplot(aes(x=reorder(abb, -Breweries), y=Breweries)) + 
+  geom_bar(stat = "identity", position = "dodge") + theme(plot.title= element_text(hjust = 0.5),axis.text.x=element_text(angle=90,size =   rel(.6),margin = margin(.05, unit = "cm"),vjust =0)) + 
+  labs(title = "Number of Breweries by State", y = "Number of Breweries",x= 'State')
+
+#geographical heat map of same data
+ggplot(StateMapData, aes(x=long,y=lat,group=group))+
+  geom_polygon(aes(fill=Breweries))+
+  geom_path()+ 
+  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Number of Breweries by State")+
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) + theme(axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + theme(axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(), panel.background = element_blank()) +coord_map()
+```
+
+Question 2: Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.  (RMD only, this does not need to be included in the presentation or the deck.)
+
+```{r}
+#merge completed above, here we will print the first/last 6 obervations
+
+head(beerbrew,6)
+tail(beerbrew,6)
+
+```
+
+Question 3: Address the missing values in each column.See above for imputing using two methods. Here we will compare methods and decide which is best to use for subsequent analyses
+
+
+```{r}
+#stacked histogram comparing imputation methods, transform wide to long first
+imputed.IBU <- beerbrew %>% select(Beer_ID,Class,IBU,IBU.pmm.imputed,IBU.class.imputed)
+colnames(imputed.IBU)[3] = "Original"
+colnames(imputed.IBU)[4] = "PMM"
+colnames(imputed.IBU)[5] = "Class-mean"
+
+imputed.IBU <- imputed.IBU %>% pivot_longer(c(Original, PMM, `Class-mean`), names_to = "Method", values_to = "IBU")
+
+imputed.IBU %>% ggplot(aes(x = IBU, fill=Method)) + geom_histogram() +
+ggtitle("IBU by Imputation Method") + xlab("IBU") + ylab("Count") +facet_wrap(~Method,ncol=1)
+
+imputed.ABV <- beerbrew %>% select(Beer_ID,Class,ABV,ABV.pmm.imputed,ABV.class.imputed)
+colnames(imputed.ABV)[3] = "Original"
+colnames(imputed.ABV)[4] = "PMM"
+colnames(imputed.ABV)[5] = "Class-mean"
+
+imputed.ABV <- imputed.ABV %>% pivot_longer(c(Original, PMM, `Class-mean`), names_to = "Method", values_to = "ABV")
+
+imputed.ABV %>% ggplot(aes(x = ABV, fill=Method)) + geom_histogram() +
+ggtitle("ABV by Imputation Method") + xlab("ABV") + ylab("Count") +facet_wrap(~Method,ncol=1)
+
+#IBU vs. ABV relationship by Imputation method
+
+imputed <- merge(imputed.IBU,imputed.ABV,all=T)
+
+
+imputed %>% ggplot(mapping=aes(y=IBU, x=ABV,color=Method)) + geom_point(size=0.5, position=position_jitter(width = 0.001, height = 1))+ geom_smooth(method="lm",se=FALSE,size=1)+ labs(title="Correlation between ABV and IBU")
+```
+
+Question 4: Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
 
 ```{r}
 
 ```
 
+Question 5: Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
+
+```{r}
+
+```
+
+Question 6: Comment on the summary statistics and distribution of the ABV variable.
+
+```{r}
+
+```
+
+Question 7: Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.  Make your best judgment of a relationship and EXPLAIN your answer.
+
+```{r}
+
+```
+
+Question 8: Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN classification to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand conceptually.
+
+In addition, while you have decided to use KNN to investigate this relationship (KNN is required) you may also feel free to supplement your response to this question with any other methods or techniques you have learned.  Creativity and alternative solutions are always encouraged.  
+
+```{r}
+
+```
+
+Question 9: Knock their socks off!  Find one other useful inference from the data that you feel Budweiser may be able to find value in.  You must convince them why it is important and back up your conviction with appropriate statistical evidence. 
+
+```{r}
+
+```
+
+
+
 For instance now you can use the mapping set to plot many variables rather than recreating, like this:
 
 ```{r}
-ggplot(StateMapData, aes(x=long,y=lat,group=group))+
-  geom_polygon(aes(fill=Breweries))+
-  geom_path()+ 
-  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Number of Breweries by State")+
-coord_map()
+
 
 ggplot(StateMapData, aes(x=long,y=lat,group=group))+
   geom_polygon(aes(fill=ABV.class.median))+
