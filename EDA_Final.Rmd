@@ -354,6 +354,8 @@ ggscatter(beerbrew, x = "IBU", y = "ABV",
           add = "reg.line", conf.int = TRUE, 
           cor.coef = TRUE, cor.method = "pearson",
           xlab = "IBU", ylab = "ABV")
+
+beerbrew %>% ggplot(mapping=aes(y=IBU, x=ABV,color=Class)) + geom_point(size=0.5, position="jitter")+ geom_smooth(method="lm",se=FALSE,size=1)+ labs(title="Correlation between ABV and IBU")
 ```
 
 Question 8: Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN classification to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand conceptually.
