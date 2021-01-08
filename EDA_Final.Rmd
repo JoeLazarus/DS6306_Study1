@@ -81,17 +81,23 @@ head(beerbrew)
 Add Features to the individual beer level data frame
 
 ```{r}
+style <- beerbrew %>% count(Class)
+view(style)
+
+#There are 100 styles of craft beer, group them into broader classes for analysis by class
+
 beerbrew["Class"] <- ifelse(str_detect(beerbrew$Style,"IPA"),"IPA", ifelse(str_detect(beerbrew$Style,"Ale"),"Ale", ifelse(str_detect(beerbrew$Style,"Lager"),"Lager", ifelse(str_detect(beerbrew$Style,"Stout"),"Stout", ifelse(str_detect(beerbrew$Style,"Pilsner"),"Pilsner", ifelse(str_detect(beerbrew$Style,"Pilsener"),"Pilsner", ifelse(str_detect(beerbrew$Style,"Porter"),"Porter", ifelse(str_detect(beerbrew$Style,"APA"),"APA", ifelse(str_detect(beerbrew$Style,"Cider"),"Cider", ifelse(str_detect(beerbrew$Style,"Witbier"),"Witbier", ifelse(str_detect(beerbrew$Style,"Kölsch"),"Kölsch", ifelse(str_detect(beerbrew$Style,"Fruit"),"Fruit", ifelse(str_detect(beerbrew$Style,"Hefeweizen"),"Hefeweizen", ifelse(str_detect(beerbrew$Style,"Oktoberfest"),"Oktoberfest", ifelse(str_detect(beerbrew$Style,"Bitter"),"Bitter",
 "Other")))))))))))))))
 
 beerbrew %>%ggplot(aes(x = Class)) + geom_bar() +
-ggtitle("Distribution of Styles") + coord_flip() + xlab("Style") + ylab("Count")
+ggtitle("Distribution of Beer Classes") + coord_flip() + xlab("Class") + ylab("Count")
+
 ```
 
 Investigate NA values to determine what needs resolution
 
 ```{r}
-aggr_plot <- aggr(beerbrew, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(beerbrew), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
+aggr_plot <- aggr(beerbrew, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(beerbrew), cex.axis=.7, gap=3, ylab=c("Percent data missing","Combinations Missing"))
 
 marginplot(beerbrew[c(4,5)])
 view(beerbrew)
@@ -246,6 +252,7 @@ ggplot(StateMapData, aes(x=long,y=lat,group=group))+
   geom_path()+ 
   scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Number of Breweries by State")+
   theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) + theme(axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + theme(axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(), panel.background = element_blank()) +coord_map()
+
 ```
 
 Question 2: Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.  (RMD only, this does not need to be included in the presentation or the deck.)
@@ -307,11 +314,11 @@ StateData %>% ggplot(aes(x=reorder(abb, -ABV.class.median), y=ABV.class.median))
 Question 5: Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
 
 ```{r}
-max.abv <- beerbrew %>% filter(ABV==max(beerbrew$ABV,na.rm=TRUE)) %>% select(Beer_Name,ABV,Class,Style,State)
+max.abv <- beerbrew %>% filter(ABV==max(beerbrew$ABV,na.rm=TRUE)) %>% select(Beer_Name,ABV,Class,Style,State,Brewery_Name)
 max.abv
-#Answer Colorado, Lee Hill Series Vol.5, ABV = 0.128
+#Answer Colorado, Lee Hill Series Vol.5, ABV = 0.128, Upslope Brewing Company
 
-max.ibu <- beerbrew %>% filter(IBU==max(beerbrew$IBU,na.rm=TRUE)) %>% select(Beer_Name,ABV,Class,Style,State)
+max.ibu <- beerbrew %>% filter(IBU==max(beerbrew$IBU,na.rm=TRUE)) %>% select(Beer_Name,IBU,Class,Style,State,Brewery_Name)
 max.ibu
 #Answer Oregon, Bitter Bitch Imperial, IBU = 138
 ```
@@ -333,29 +340,46 @@ ggplot(beerbrew, aes(x=ABV)) +
 Question 7: Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.  Make your best judgment of a relationship and EXPLAIN your answer.
 
 ```{r}
-beerbrew %>% ggplot(mapping=aes(y=IBU, x=ABV)) + geom_point()+
-  geom_point(position=position_jitter(width=0.01),alpha=0.5)+
-  geom_smooth(method="lm",se=FALSE,size=2)+
+
+lm_eqn <- function(df, y, x){
+    formula = as.formula(sprintf('%s ~ %s', y, x))
+    m <- lm(formula, data=df);
+    # formating the values into a summary string to print out
+    # ~ give some space, but equal size and comma need to be quoted
+    eq <- substitute(italic(target) == a + b %.% italic(input)*","~~italic(r)^2~"="~r2*","~~p~"="~italic(pvalue), 
+         list(target = y,
+              input = x,
+              a = format(as.vector(coef(m)[1]), digits = 2), 
+              b = format(as.vector(coef(m)[2]), digits = 2), 
+             r2 = format(summary(m)$r.squared, digits = 3),
+             # getting the pvalue
+             pvalue = format(summary(m)$coefficients[2,'Pr(>|t|)'], digits=1)
+            )
+          )
+    as.character(as.expression(eq));                 
+}
+
+# for all beers combined, R^2=0.45
+beerbrew %>% ggplot(aes(x=IBU,y=ABV)) + geom_point() +
+  geom_text(x=75,y=0.11,label=lm_eqn(beerbrew, 'ABV','IBU'),color='red',parse=T) +
+  geom_smooth(method='lm') +
   labs(title="Correlation between ABV and IBU")
 
+# for just IPA's the R^2 drops slightly to 0.41
+beerbrew %>% filter(Class == "IPA") %>% ggplot(aes(x=IBU,y=ABV)) + geom_point() +
+  geom_text(x=75,y=0.03,label=lm_eqn(beerbrew %>% filter(Class == "IPA"), 'ABV','IBU'),color='red',parse=T) +
+  geom_smooth(method='lm') +
+  labs(title="IPA: Correlation between ABV and IBU")
 
-# correlation test
+#for just Ales, the R^2 drops significantly to 0.23 but is still significant with p=1e-33 Could follow up to study this by variety of Ales to see if certain styles weaken the correlation
+beerbrew %>% filter(Class == "Ale") %>% ggplot(aes(x=IBU,y=ABV)) + geom_point() +
+  geom_text(x=75,y=0.039,label=lm_eqn(beerbrew %>% filter(Class == "Ale"), 'ABV','IBU'),color='red',parse=T) +
+  geom_smooth(method='lm') +
+  labs(title="Ale: Correlation between ABV and IBU")
 
-IbuAbv.cor <- cor.test(beerbrew$IBU,beerbrew$ABV, method= 'pearson')
-IbuAbv.cor # cor test result 0.6706 positive linear correlation
+#overlay IPA vs. Ale on same scatterplot
+beerbrew %>% filter(Class == "IPA" | Class == "Ale") %>% ggplot(mapping=aes(y=IBU, x=ABV,color=Class)) + geom_point(size=0.5, position="jitter")+ geom_smooth(method="lm",se=FALSE,size=1)+ labs(title="Correlation between ABV and IBU")
 
-r_test = cor.test(beerbrew$IBU, beerbrew$ABV)
-r_test
-
-beerbrew.mod <- lm(IBU ~ ABV, data = beerbrew) 
-summary(beerbrew.mod)
-
-ggscatter(beerbrew, x = "IBU", y = "ABV", 
-          add = "reg.line", conf.int = TRUE, 
-          cor.coef = TRUE, cor.method = "pearson",
-          xlab = "IBU", ylab = "ABV")
-
-beerbrew %>% ggplot(mapping=aes(y=IBU, x=ABV,color=Class)) + geom_point(size=0.5, position="jitter")+ geom_smooth(method="lm",se=FALSE,size=1)+ labs(title="Correlation between ABV and IBU")
 ```
 
 Question 8: Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN classification to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand conceptually.
