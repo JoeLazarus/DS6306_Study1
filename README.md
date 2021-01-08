@@ -18,9 +18,13 @@ Case Study of U.S. craft beers. The Client Budweiser hired our team to conduct s
 The Data Sets
 
 *['Beers.csv'] (GitHub URL)
+
 *['Breweries.csv'] (GitHub URL)
+
 *['NIH_per_capita.csv'] (Github URL) Source ('https://vinepair.com/articles/map-states-drink-beer-america-2020/')
+
 *['NIH_total_consumption.csv'] (Github URL) Source ('https://vinepair.com/articles/map-states-drink-beer-america-2020/')
+
 *['NIH_total_consumption.csv'] (Github URL) Source ('https://www.census.gov/data/datasets/time-series/demo/popest/2010s-state-total.html')
 
 ## CodeBook
