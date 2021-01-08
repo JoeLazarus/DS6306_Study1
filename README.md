@@ -3,7 +3,7 @@ created by Rick Fontenot (github url), Jason Herbaugh (github url) and Joseph La
 
 ## Purpose
 
-Case Study of US craft Beers. The Client Budweiser hired our team to conduct specific analysis and anticipated new questions of expanding market share.
+Case Study of U.S. craft beers. The Client Budweiser hired our team to conduct specific analysis and anticipated new questions of expanding market share.
 
 ## YouTube Video
 
