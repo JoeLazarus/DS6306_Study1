@@ -82,7 +82,7 @@ head(beerbrew)
 Add Features to the individual beer level data frame
 
 ```{r}
-style <- beerbrew %>% count(Class)
+style <- beerbrew %>% count(Style)
 view(style)
 
 #There are 100 styles of craft beer, group them into broader classes for analysis by class
