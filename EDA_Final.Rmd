@@ -362,6 +362,134 @@ In addition, while you have decided to use KNN to investigate this relationship 
 
 ```{r}
 
+# Filter out any beer style that isnt and IPA or an Ale.
+beers_IPAALE <- filter(beerbrew,grepl('IPA|Ale',Style))
+beers_IPAALE <- beers_IPAALE[,-8]
+
+#Make Style a factor
+beers_IPAALE$Style <- as.character(beers_IPAALE$Style)
+beers_IPAALE$Class <- as.character(beers_IPAALE$Class)
+
+# Create a new data frame that only holds the ABV,IBU, and beer style.
+# A dataframe for each of the imputed methods
+beers_IPAALE_NA<- select(beers_IPAALE,ABV,IBU,Class)
+beers_IPAALE_PMM <- select(beers_IPAALE,ABV.pmm.imputed,IBU.pmm.imputed,Class)
+beers_IPAALE_CLASS <- select(beers_IPAALE,ABV.class.imputed,IBU.class.imputed,Class)
+
+
+beers_IPAALE_NA$Class <- as.factor(beers_IPAALE_NA$Class)
+beers_IPAALE_PMM$Class <- as.factor(beers_IPAALE_PMM$Class)
+beers_IPAALE_CLASS$Class <- as.factor(beers_IPAALE_CLASS$Class)
+
+set.seed(877)
+splitpale = .70
+beerbrew_sample_NA <- sample(1:dim(beers_IPAALE_NA)[1],round(splitpale * dim(beers_IPAALE_NA)[1]))
+
+# The following code separates the randomly selected values into the 70 to 30 split.
+knn_train_beers_na <- beers_IPAALE_NA[beerbrew_sample_NA,]
+knn_test_beers_na <- beers_IPAALE_NA[-beerbrew_sample_NA,]
+
+knn_train_beers_na = na.omit(knn_train_beers_na)
+knn_test_beers_na = na.omit(knn_test_beers_na)
+
+#md.pattern(knn_train)
+
+
+# Using only the IBU and ABV values from both the training and test sets
+# I use the beer style as the class against which the knn will search.
+knnbeer <- knn(knn_train_beers_na[,1:2],knn_test_beers_na[,1:2],cl=knn_train_beers_na$Class,k=24,prob = TRUE)
+# The confusion matrix is used for calibrating the output of a model and examining all possible outcomes of the predictions
+ipamatrix <- confusionMatrix(table(knnbeer,knn_test_beers_na$Class))
+ipamatrix
+
+
+
+
+#PMM
+set.seed(877)
+splitpale = .70
+beerbrew_sample_PMM <- sample(1:dim(beers_IPAALE_PMM)[1],round(splitpale * dim(beers_IPAALE_PMM)[1]))
+
+# The following code separates the randomly selected values into the 70 to 30 split.
+knn_train_beers_PMM <- beers_IPAALE_PMM[beerbrew_sample_PMM,]
+knn_test_beers_PMM <- beers_IPAALE_PMM[-beerbrew_sample_PMM,]
+
+
+#md.pattern(knn_train)
+
+
+# Using only the IBU and ABV values from both the training and test sets
+# I use the beer style as the class against which the knn will search.
+knnbeer_PMM <- knn(knn_train_beers_PMM[,1:2],knn_test_beers_PMM[,1:2],cl=as.factor(knn_train_beers_PMM$Class),k=24,prob = TRUE)
+# The confusion matrix is used for calibrating the output of a model and examining all possible outcomes of the predictions
+ipamatrix <- confusionMatrix(table(knnbeer_PMM,as.factor(knn_test_beers_PMM$Class)))
+ipamatrix
+
+
+
+#Class
+set.seed(877)
+splitpale = .70
+beerbrew_sample_CLASS <- sample(1:dim(beers_IPALE_CLASS)[1],round(splitpale * dim(beers_IPALE_CLASS)[1]))
+
+# The following code separates the randomly selected values into the 70 to 30 split.
+knn_train_beers_CLASS <- beers_IPAALE_CLASS[beerbrew_sample_CLASS,]
+knn_test_beers_CLASS <- beers_IPAALE_CLASS[-beerbrew_sample_CLASS,]
+
+
+#md.pattern(knn_train)
+
+
+# Using only the IBU and ABV values from both the training and test sets
+# I use the beer style as the class against which the knn will search.
+knnbeer_CLASS <- knn(knn_train_beers_CLASS[,1:2],knn_test_beers_CLASS[,1:2],cl=as.factor(knn_train_beers_CLASS$Class),k=24,prob = TRUE)
+# The confusion matrix is used for calibrating the output of a model and examining all possible outcomes of the predictions
+ipamatrix <- confusionMatrix(table(knnbeer_CLASS,as.factor(knn_test_beers_CLASS$Class)))
+ipamatrix
+
+
+
+
+
+
+
+
+
+
+
+# iterations = 100
+# numks = 90
+# masterAcc = matrix(nrow = iterations, ncol = numks)
+#   
+# for(j in 1:iterations)
+# {
+# accs = data.frame(accuracy = numeric(90), k = numeric(90))
+# 
+# beerbrew_sample_NA <- sample(1:dim(beers_IPAALE_NA)[1],round(splitpale * dim(beers_IPAALE_NA)[1]))
+# knn_train_beers_na <- beers_IPAALE_NA[beerbrew_sample_NA,]
+# knn_test_beers_na <- beers_IPAALE_NA[-beerbrew_sample_NA,]
+# 
+# knn_train_beers_na = na.omit(knn_train_beers_na)
+# knn_test_beers_na = na.omit(knn_test_beers_na)
+# 
+# 
+# for(i in 1:numks)
+# {
+#   knnbeer <- knn(knn_train_beers_na[,1:2],knn_test_beers_na[,1:2],cl=as.factor(knn_train_beers_na$Class),k=i,prob = TRUE)
+#   table(as.factor(knn_train_beers_na$Class),knnbeer)
+#   CM = confusionMatrix(table(as.factor(knn_train_beers_na$Class),knnbeer))
+#   masterAcc[j,i] = CM$overall[1]
+# }
+# 
+# }
+# 
+# MeanAcc = colMeans(masterAcc)
+# 
+# plot(seq(1,numks,1),MeanAcc, type = "l")
+# which.max(MeanAcc)
+# max(MeanAcc)
+
+
 ```
 
 Question 9: Knock their socks off!  Find one other useful inference from the data that you feel Budweiser may be able to find value in.  You must convince them why it is important and back up your conviction with appropriate statistical evidence. 
