@@ -56,6 +56,7 @@ Load Theme for plots
 ```{r}
 theme_set(theme_fivethirtyeight())
 theme_update(axis.title = element_text()) #the default for fivethirtyeight is to not show axis labels, this removes that default so we can choose to specify and display axis titles
+theme_update(plot.title = element_text(hjust = 0.5)) # changing default to center all titles
 ```
 
 Load and Merge initial data sets provided
@@ -327,13 +328,35 @@ Question 6: Comment on the summary statistics and distribution of the ABV variab
 
 ```{r}
 summary(beerbrew$ABV)
+#Quartiles  1st = 0.0500, Median = 0.056, Mean = 0.5977, 3rd = 0.067, Max = 0.128, NA's =62
 
-#Distribution of ABV Variable 
+#other class of Beers makes up a significant portion of the outliers see box plot below
+
+#taking a look at the quantiles with boxplots This shows how the "other" category has most the outliers, Makes sense that non standard beers would fall into outlier position. Extreme low ABV and high
+beerbrew %>% select(ABV, Class)  %>% ggplot(aes(y=ABV)) + 
+  geom_boxplot(outlier.colour = "#200804", outlier.shape = 6, outlier.size = 2)+ 
+  geom_jitter(aes(x=Class),color="black", size=0.4, alpha=.5)+
+  coord_flip() + 
+  labs(title= "Distribution of ABV" , x = "All Beers", y= "Alcohol by Volume",
+       caption = "Outliers are represented by triangles")
+
+#Histogram showing distribution of ABV Variable 
 beerbrew %>% select(ABV) %>% ggplot(mapping=aes(x= ABV)) +
-  geom_histogram(bins = 50) +  labs(title = "Distribution of Alcohol By Volume", y = "Frequency",x= 'ABV')
+  geom_histogram(bins = 50, col = "red",aes(fill = ..count..)) + 
+  scale_fill_gradient(low = "blue", high = "red", na.value = NA) +
+  labs(title = "Distribution of Alcohol By Volume", y = "Frequency",x= 'ABV')
 
+#Same Histogram but broken down by class
+beerbrew %>% select(ABV) %>% ggplot(mapping=aes(x=ABV, fill=Class)) +
+  geom_histogram(color= 'black',bins = 50) + 
+  labs(title = "Distribution of Alcohol By Volume", y = "Frequency",x= 'ABV')
+
+#Density plot 
 ggplot(beerbrew, aes(x=ABV)) + 
-  geom_density()
+  geom_density() + geom_vline(aes(xintercept=mean(eval(parse(text=ABV)))), 
+  color="black", linetype="dashed", size=1) +
+    labs(x="ABV", y = "Density", title = "ABV Density Plot", 
+         caption = "The mean is represented by the dashed")
 
 ```
 
