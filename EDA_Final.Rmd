@@ -437,159 +437,238 @@ beers_IPAALE_CLASS_Z = data.frame(ZABV = scale(beers_IPAALE_CLASS$ABV.class.impu
 
 #KNN - Omit NA
 set.seed(877)
-splitpale = .70
-beerbrew_sample_NA <- sample(1:dim(beers_IPAALE_NA)[1],round(splitpale * dim(beers_IPAALE_NA)[1]))
+iterations = 500
+numks = 60
+splitPerc = .70
 
-# The following code separates the randomly selected values into the 70 to 30 split.
-knn_train_beers_na <- beers_IPAALE_NA[beerbrew_sample_NA,]
-knn_test_beers_na <- beers_IPAALE_NA[-beerbrew_sample_NA,]
+masterAcc = matrix(nrow = iterations, ncol = numks)
+masterSens = matrix(nrow = iterations, ncol = numks)
+masterSpec = matrix(nrow = iterations, ncol = numks)
 
-knn_train_beers_na = na.omit(knn_train_beers_na)
-knn_test_beers_na = na.omit(knn_test_beers_na)
+for(j in 1:iterations)
+{
+  beerbrew_sample_NA <- sample(1:dim(beers_IPAALE_NA)[1],round(splitpale * dim(beers_IPAALE_NA)[1]))
+  knn_train_beers_NA <- beers_IPAALE_NA[beerbrew_sample_NA,]
+  knn_test_beers_NA <- beers_IPAALE_NA[-beerbrew_sample_NA,]
+  knn_train_beers_NA = na.omit(knn_train_beers_na)
+  knn_test_beers_NA = na.omit(knn_test_beers_na)
 
-#md.pattern(knn_train)
+  for(i in 1:numks)
+  {
+    classifications = knn(knn_train_beers_NA[,1:2],knn_test_beers_NA[,1:2],knn_train_beers_NA$Class,k=i,prob = TRUE)
+    table(knn_test_beers_NA$Class,classifications)
+    CM = confusionMatrix(table(knn_test_beers_NA$Class,classifications))
+    masterAcc[j,i] = CM$overall[1]
+    masterSens[j,i] = mean(CM$byClass['Sensitivity'])
+    masterSpec[j,i] = mean(CM$byClass['Specificity'] )
+  }
+  
+}
 
+MeanAcc = colMeans(masterAcc)
+MeanSens = colMeans(masterSens)
+MeanSpec = colMeans(masterSpec)
 
-# Using only the IBU and ABV values from both the training and test sets
-# I use the beer style as the class against which the knn will search.
-knnbeer <- knn(knn_train_beers_na[,1:2],knn_test_beers_na[,1:2],cl=knn_train_beers_na$Class,k=24,prob = TRUE)
-# The confusion matrix is used for calibrating the output of a model and examining all possible outcomes of the predictions
-ipamatrix <- confusionMatrix(table(knnbeer,knn_test_beers_na$Class))
-ipamatrix
-
+plot(seq(1,numks,1),MeanAcc, type = "l")
+plot(seq(1,numks,1),MeanSens, type = "l")
+plot(seq(1,numks,1),MeanSpec, type = "l")
 
 
 
 #KNN - Omit NA - Scale ABV/IBU
 set.seed(877)
-splitpale = .70
-beerbrew_sample_NA_Z <- sample(1:dim(beers_IPAALE_NA_Z)[1],round(splitpale * dim(beers_IPAALE_NA_Z)[1]))
+iterations = 500
+numks = 60
+splitPerc = .70
 
-# The following code separates the randomly selected values into the 70 to 30 split.
-knn_train_beers_na_Z <- beers_IPAALE_NA_Z[beerbrew_sample_NA_Z,]
-knn_test_beers_na_Z <- beers_IPAALE_NA_Z[-beerbrew_sample_NA_Z,]
+masterAcc = matrix(nrow = iterations, ncol = numks)
+masterSens = matrix(nrow = iterations, ncol = numks)
+masterSpec = matrix(nrow = iterations, ncol = numks)
 
-knn_train_beers_na_Z = na.omit(knn_train_beers_na_Z)
-knn_test_beers_na_Z = na.omit(knn_test_beers_na_Z)
-
-#md.pattern(knn_train)
-
-
-# Using only the IBU and ABV values from both the training and test sets
-# I use the beer style as the class against which the knn will search.
-knnbeer_Z <- knn(knn_train_beers_na_Z[,1:2],knn_test_beers_na_Z[,1:2],cl=knn_train_beers_na_Z$Class,k=24,prob = TRUE)
-# The confusion matrix is used for calibrating the output of a model and examining all possible outcomes of the predictions
-ipamatrix <- confusionMatrix(table(knnbeer_Z,knn_test_beers_na_Z$Class))
-ipamatrix
-
-
-
-
-
-
-#PMM
-set.seed(877)
-splitpale = .70
-beerbrew_sample_PMM <- sample(1:dim(beers_IPAALE_PMM)[1],round(splitpale * dim(beers_IPAALE_PMM)[1]))
-
-# The following code separates the randomly selected values into the 70 to 30 split.
-knn_train_beers_PMM <- beers_IPAALE_PMM[beerbrew_sample_PMM,]
-knn_test_beers_PMM <- beers_IPAALE_PMM[-beerbrew_sample_PMM,]
-
-
-#md.pattern(knn_train)
-
-
-# Using only the IBU and ABV values from both the training and test sets
-# I use the beer style as the class against which the knn will search.
-knnbeer_PMM <- knn(knn_train_beers_PMM[,1:2],knn_test_beers_PMM[,1:2],cl=as.factor(knn_train_beers_PMM$Class),k=24,prob = TRUE)
-# The confusion matrix is used for calibrating the output of a model and examining all possible outcomes of the predictions
-ipamatrix <- confusionMatrix(table(knnbeer_PMM,as.factor(knn_test_beers_PMM$Class)))
-ipamatrix
-
-
-
-
-
-#PMM - Scaled IBU/ABV
-set.seed(877)
-splitpale = .70
-beerbrew_sample_PMM_Z <- sample(1:dim(beers_IPAALE_PMM_Z)[1],round(splitpale * dim(beers_IPAALE_PMM_Z)[1]))
-
-# The following code separates the randomly selected values into the 70 to 30 split.
-knn_train_beers_PMM_Z <- beers_IPAALE_PMM_Z[beerbrew_sample_PMM_Z,]
-knn_test_beers_PMM_Z <- beers_IPAALE_PMM_Z[-beerbrew_sample_PMM_Z,]
-
-
-#md.pattern(knn_train)
-
-
-# Using only the IBU and ABV values from both the training and test sets
-# I use the beer style as the class against which the knn will search.
-knnbeer_PMM_Z <- knn(knn_train_beers_PMM_Z[,1:2],knn_test_beers_PMM_Z[,1:2],cl=as.factor(knn_train_beers_PMM$Class),k=24,prob = TRUE)
-# The confusion matrix is used for calibrating the output of a model and examining all possible outcomes of the predictions
-ipamatrix <- confusionMatrix(table(knnbeer_PMM_Z,as.factor(knn_test_beers_PMM_Z$Class)))
-ipamatrix
-
-
-
-#Class
-set.seed(877)
-splitpale = .70
-beerbrew_sample_CLASS <- sample(1:dim(beers_IPAALE_CLASS)[1],round(splitpale * dim(beers_IPAALE_CLASS)[1]))
-
-# The following code separates the randomly selected values into the 70 to 30 split.
-knn_train_beers_CLASS <- beers_IPAALE_CLASS[beerbrew_sample_CLASS,]
-knn_test_beers_CLASS <- beers_IPAALE_CLASS[-beerbrew_sample_CLASS,]
-
-
-#md.pattern(knn_train)
-
-
-# Using only the IBU and ABV values from both the training and test sets
-# I use the beer style as the class against which the knn will search.
-knnbeer_CLASS <- knn(knn_train_beers_CLASS[,1:2],knn_test_beers_CLASS[,1:2],cl=as.factor(knn_train_beers_CLASS$Class),k=24,prob = TRUE)
-# The confusion matrix is used for calibrating the output of a model and examining all possible outcomes of the predictions
-ipamatrix <- confusionMatrix(table(knnbeer_CLASS,as.factor(knn_test_beers_CLASS$Class)))
-ipamatrix
-
-
-
-#Class- Scale ABV/IBU 
-set.seed(877)
-splitpale = .70
-beerbrew_sample_CLASS_Z <- sample(1:dim(beers_IPAALE_CLASS_Z)[1],round(splitpale * dim(beers_IPAALE_CLASS_Z)[1]))
-
-# The following code separates the randomly selected values into the 70 to 30 split.
-knn_train_beers_CLASS_Z <- beers_IPAALE_CLASS_Z[beerbrew_sample_CLASS_Z,]
-knn_test_beers_CLASS_Z <- beers_IPAALE_CLASS_Z[-beerbrew_sample_CLASS_Z,]
-
-
-#md.pattern(knn_train)
-
-
-# Using only the IBU and ABV values from both the training and test sets
-# I use the beer style as the class against which the knn will search.
-knnbeer_CLASS_Z <- knn(knn_train_beers_CLASS_Z[,1:2],knn_test_beers_CLASS_Z[,1:2],cl=as.factor(knn_train_beers_CLASS_Z$Class),k=24,prob = TRUE)
-# The confusion matrix is used for calibrating the output of a model and examining all possible outcomes of the predictions
-ipamatrix <- confusionMatrix(table(knnbeer_CLASS_Z,as.factor(knn_test_beers_CLASS_Z$Class)))
-ipamatrix
-
-
-
-accs = data.frame(accuracy = numeric(30), k = numeric(30))
-
-
-for(i in 1:30)
+for(j in 1:iterations)
 {
-classifications = knn(knn_train_beers_CLASS_Z[,1:2],knn_test_beers_CLASS_Z[,1:2],knn_train_beers_CLASS_Z$Class,k=i,prob = TRUE)
-table(knn_train_beers_CLASS_Z$Class,classifications)
-CM = confusionMatrix(table(knn_train_beers_CLASS_Z$Class,classifications))
-accs$accuracy[i] = CM$overall[1]
-accs$k[i] = i
-}
-plot(accs$k,accs$accuracy, type = "l")
+  beerbrew_sample_NA_Z <- sample(1:dim(beers_IPAALE_NA_Z)[1],round(splitpale * dim(beers_IPAALE_NA_Z)[1]))
+  knn_train_beers_NA_Z <- beers_IPAALE_NA_Z[beerbrew_sample_NA_Z,]
+  knn_test_beers_NA_Z <- beers_IPAALE_NA_Z[-beerbrew_sample_NA_Z,]
+  knn_train_beers_NA_Z = na.omit(knn_train_beers_NA_Z)
+  knn_test_beers_NA_Z = na.omit(knn_test_beers_NA_Z)
 
+  for(i in 1:numks)
+  {
+    classifications = knn(knn_train_beers_NA_Z[,1:2],knn_test_beers_NA_Z[,1:2],knn_train_beers_NA_Z$Class,k=i,prob = TRUE)
+    table(knn_test_beers_NA_Z$Class,classifications)
+    CM = confusionMatrix(table(knn_test_beers_NA_Z$Class,classifications))
+    masterAcc[j,i] = CM$overall[1]
+    masterSens[j,i] = mean(CM$byClass['Sensitivity'])
+    masterSpec[j,i] = mean(CM$byClass['Specificity'] )
+  }
+  
+}
+
+MeanAcc = colMeans(masterAcc)
+MeanSens = colMeans(masterSens)
+MeanSpec = colMeans(masterSpec)
+
+plot(seq(1,numks,1),MeanAcc, type = "l")
+plot(seq(1,numks,1),MeanSens, type = "l")
+plot(seq(1,numks,1),MeanSpec, type = "l")
+
+
+#KNN - PMM
+set.seed(877)
+iterations = 500
+numks = 60
+splitPerc = .70
+
+masterAcc = matrix(nrow = iterations, ncol = numks)
+masterSens = matrix(nrow = iterations, ncol = numks)
+masterSpec = matrix(nrow = iterations, ncol = numks)
+
+for(j in 1:iterations)
+{
+  beerbrew_sample_PMM <- sample(1:dim(beers_IPAALE_PMM)[1],round(splitpale * dim(beers_IPAALE_PMM)[1]))
+  knn_train_beers_PMM <- beers_IPAALE_PMM[beerbrew_sample_PMM,]
+  knn_test_beers_PMM <- beers_IPAALE_PMM[-beerbrew_sample_PMM,]
+  
+
+  for(i in 1:numks)
+  {
+    classifications = knn(knn_train_beers_PMM[,1:2],knn_test_beers_PMM[,1:2],knn_train_beers_PMM$Class,k=i,prob = TRUE)
+    table(knn_test_beers_PMM$Class,classifications)
+    CM = confusionMatrix(table(knn_test_beers_PMM$Class,classifications))
+    masterAcc[j,i] = CM$overall[1]
+    masterSens[j,i] = mean(CM$byClass['Sensitivity'])
+    masterSpec[j,i] = mean(CM$byClass['Specificity'] )
+  }
+  
+}
+
+MeanAcc = colMeans(masterAcc)
+MeanSens = colMeans(masterSens)
+MeanSpec = colMeans(masterSpec)
+
+plot(seq(1,numks,1),MeanAcc, type = "l")
+plot(seq(1,numks,1),MeanSens, type = "l")
+plot(seq(1,numks,1),MeanSpec, type = "l")
+
+
+
+#KNN - PMM - Scale ABV/IBU
+set.seed(877)
+iterations = 500
+numks = 60
+splitPerc = .70
+
+masterAcc = matrix(nrow = iterations, ncol = numks)
+masterSens = matrix(nrow = iterations, ncol = numks)
+masterSpec = matrix(nrow = iterations, ncol = numks)
+
+for(j in 1:iterations)
+{
+  beerbrew_sample_PMM_Z <- sample(1:dim(beers_IPAALE_PMM_Z)[1],round(splitpale * dim(beers_IPAALE_PMM_Z)[1]))
+  knn_train_beers_PMM_Z <- beers_IPAALE_PMM_Z[beerbrew_sample_PMM_Z,]
+  knn_test_beers_PMM_Z <- beers_IPAALE_PMM_Z[-beerbrew_sample_PMM_Z,]
+  
+  for(i in 1:numks)
+  {
+    classifications = knn(knn_train_beers_PMM_Z[,1:2],knn_test_beers_PMM_Z[,1:2],knn_train_beers_PMM_Z$Class,k=i,prob = TRUE)
+    table(knn_test_beers_PMM_Z$Class,classifications)
+    CM = confusionMatrix(table(knn_test_beers_PMM_Z$Class,classifications))
+    masterAcc[j,i] = CM$overall[1]
+    masterSens[j,i] = mean(CM$byClass['Sensitivity'])
+    masterSpec[j,i] = mean(CM$byClass['Specificity'] )
+  }
+  
+}
+
+MeanAcc = colMeans(masterAcc)
+MeanSens = colMeans(masterSens)
+MeanSpec = colMeans(masterSpec)
+
+plot(seq(1,numks,1),MeaPMMcc, type = "l")
+plot(seq(1,numks,1),MeanSens, type = "l")
+plot(seq(1,numks,1),MeanSpec, type = "l")
+
+
+
+
+
+
+#KNN - CLASS
+set.seed(877)
+iterations = 500
+numks = 60
+splitPerc = .70
+
+masterAcc = matrix(nrow = iterations, ncol = numks)
+masterSens = matrix(nrow = iterations, ncol = numks)
+masterSpec = matrix(nrow = iterations, ncol = numks)
+
+for(j in 1:iterations)
+{
+  beerbrew_sample_CLASS <- sample(1:dim(beers_IPAALE_CLASS)[1],round(splitpale * dim(beers_IPAALE_CLASS)[1]))
+  knn_train_beers_CLASS <- beers_IPAALE_CLASS[beerbrew_sample_CLASS,]
+  knn_test_beers_CLASS <- beers_IPAALE_CLASS[-beerbrew_sample_CLASS,]
+  
+
+  for(i in 1:numks)
+  {
+    classifications = knn(knn_train_beers_CLASS[,1:2],knn_test_beers_CLASS[,1:2],knn_train_beers_CLASS$Class,k=i,prob = TRUE)
+    table(knn_test_beers_CLASS$Class,classifications)
+    CM = confusionMatrix(table(knn_test_beers_CLASS$Class,classifications))
+    masterAcc[j,i] = CM$overall[1]
+    masterSens[j,i] = mean(CM$byClass['Sensitivity'])
+    masterSpec[j,i] = mean(CM$byClass['Specificity'] )
+  }
+  
+}
+
+MeanAcc = colMeans(masterAcc)
+MeanSens = colMeans(masterSens)
+MeanSpec = colMeans(masterSpec)
+
+plot(seq(1,numks,1),MeanAcc, type = "l")
+plot(seq(1,numks,1),MeanSens, type = "l")
+plot(seq(1,numks,1),MeanSpec, type = "l")
+
+
+
+#KNN - CLASS - Scale ABV/IBU
+set.seed(877)
+iterations = 500
+numks = 60
+splitPerc = .70
+
+masterAcc = matrix(nrow = iterations, ncol = numks)
+masterSens = matrix(nrow = iterations, ncol = numks)
+masterSpec = matrix(nrow = iterations, ncol = numks)
+
+for(j in 1:iterations)
+{
+  beerbrew_sample_CLASS_Z <- sample(1:dim(beers_IPAALE_CLASS_Z)[1],round(splitpale * dim(beers_IPAALE_CLASS_Z)[1]))
+  knn_train_beers_CLASS_Z <- beers_IPAALE_CLASS_Z[beerbrew_sample_CLASS_Z,]
+  knn_test_beers_CLASS_Z <- beers_IPAALE_CLASS_Z[-beerbrew_sample_CLASS_Z,]
+  
+
+  for(i in 1:numks)
+  {
+    classifications = knn(knn_train_beers_CLASS_Z[,1:2],knn_test_beers_CLASS_Z[,1:2],knn_train_beers_CLASS_Z$Class,k=i,prob = TRUE)
+    table(knn_test_beers_CLASS_Z$Class,classifications)
+    CM = confusionMatrix(table(knn_test_beers_CLASS_Z$Class,classifications))
+    masterAcc[j,i] = CM$overall[1]
+    masterSens[j,i] = mean(CM$byClass['Sensitivity'])
+    masterSpec[j,i] = mean(CM$byClass['Specificity'] )
+  }
+  
+}
+
+MeanAcc = colMeans(masterAcc)
+MeanSens = colMeans(masterSens)
+MeanSpec = colMeans(masterSpec)
+
+plot(seq(1,numks,1),MeanAcc, type = "l")
+plot(seq(1,numks,1),MeanSens, type = "l")
+plot(seq(1,numks,1),MeanSpec, type = "l")
 
 
 
