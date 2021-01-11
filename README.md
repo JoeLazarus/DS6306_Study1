@@ -19,11 +19,11 @@ Case Study of U.S. craft beers. The Client Budweiser hired our team to conduct s
 ## Data
 The Data Sets
 
-* [Beers.csv]('https://github.com/rickfontenot/DS6306_Study1/blob/main/Beers.csv') - The US craft beers data set
+* [Beers.csv](https://github.com/rickfontenot/DS6306_Study1/blob/main/Beers.csv) - The US craft beers data set
 
-* [Breweries.csv]('https://github.com/rickfontenot/DS6306_Study1/blob/main/Breweries.csv') The US craft breweries data set
+* [Breweries.csv](https://github.com/rickfontenot/DS6306_Study1/blob/main/Breweries.csv) - The US craft breweries data set
 
-* [NIH_per_capita.csv](https://github.com/rickfontenot/DS6306_Study1/blob/main/NIH_per_capita.csv) - Data from National Institute from Health regarding per capita alcohol consumption broken down by state[Source Website]('https://vinepair.com/articles/map-states-drink-beer-america-2020/') 
+* [NIH_per_capita.csv](https://github.com/rickfontenot/DS6306_Study1/blob/main/NIH_per_capita.csv) - Data from National Institute from Health regarding per capita alcohol consumption broken down by state[Source Website](https://vinepair.com/articles/map-states-drink-beer-america-2020/) 
 
 * [NIH_total_consumption.csv](https://github.com/rickfontenot/DS6306_Study1/blob/main/NIH_total_consumption.csv) - Data from National Institute from Health regarding total alcohol consumption broken down by state [Source Website](https://vinepair.com/articles/map-states-drink-beer-america-2020/) 
 
