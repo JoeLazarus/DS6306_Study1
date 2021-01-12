@@ -1,5 +1,5 @@
 # BeerAnalysis 
-created by [Rick Fontenot](https://github.com/rickfontenot), [Jason Herbaugh](GitHuburl.com/jason) [Joseph Lazarus](https://github.com/JoeLazarus)
+created by [Rick Fontenot](https://github.com/rickfontenot), [Jason Herbaugh](https://github.com/jherbaugh) [Joseph Lazarus](https://github.com/JoeLazarus)
 
 ## Purpose
 
