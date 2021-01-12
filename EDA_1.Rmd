@@ -409,14 +409,15 @@ brew.consum <- brew.consum %>% rename(state = State)
 
 
 #makeing a bar chart to help show which states have the most advantageous ratio
-#creating filter at 0.5 leaves us with top 6                                     
-brew.consum$filteredstate = ifelse(brew.consum$per.capita.brewery.strength > 0.5,brew.consum$state, "other")
+####fixed### bar chart sorting by a different method goal is to remove the other coloumn
+top10.per.capita <- brew.consum %>% arrange(desc(per.capita.brewery.strength)) %>% slice(1:10)
 
-#bar chart of top 8 most advantagous ratio
-brew.consum %>% ggplot(aes(x=reorder(filteredstate, -per.capita.brewery.strength), y = per.capita.brewery.strength)) +
-  geom_bar(aes(fill= filteredstate),stat = "identity") +
-  labs(title = "Top 8 States. Number of breweries compared to per capita consumption", 
-       x="Top 8 states (other represents all other states combined)", y="Num Breweries / Per capita consumption")
+#bar chart of top 10 most advantagous ratio. Removed Other coloumn
+top10.per.capita %>% ggplot(aes(x=reorder(state, -per.capita.brewery.strength), y = per.capita.brewery.strength)) +
+  geom_bar(aes(fill= state),stat = "identity") +
+  labs(title = "Top 10 States. Number of breweries compared to per capita consumption", 
+       x="Top 10 States", y="Per capita consumption / Num of Breweries")
+
 
 
 library(usmap)
@@ -482,9 +483,6 @@ census2019$State[which(is.na(census2019$State))] <- "DC"
 
 #data prep renaming column name to match to lower case "s"
 census2019 <- census2019 %>% rename("state" = "State")
-
-#data prep need to remove column named filtered states column for the merge
-brew.consum <- subset(brew.consum, select = -c(filteredstate))
 
 #data prep merge
 brew.consum <- full_join(brew.consum, census2019, by = 'state')
