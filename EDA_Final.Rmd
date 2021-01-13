@@ -48,6 +48,8 @@ library(mapproj)
 library(stringr)
 library(ggplot2) 
 library(ggthemes)
+#install.packages("table1")
+library(table1)
 
 ```
 
@@ -241,7 +243,7 @@ StateData$pop.2019 <- as.numeric(StateData$pop.2019)
 #calculate #Breweries per capita
 StateData["Breweries.percapita"] = StateData$Breweries / (StateData$pop.2019/1000000)
 
-head(StateData)
+view(StateData)
 ```
 
 Create a State Mapping data frame so that all summary statistics can be geographically plotted
@@ -251,10 +253,11 @@ states <- map_data("state")
 colnames(states)[5] = "State"
 
 StateData$State <- tolower(StateData$State)
-view(StateData)
+
 
 StateMapData <- merge(states,StateData, by="State", all.x=T)
 StateMapData <- StateMapData[order(StateMapData$order),]
+view(StateMapData)
 ```
 
 Question 1: How many breweries are present in each state?
@@ -376,6 +379,7 @@ ggplot(beerbrew, aes(x=ABV)) +
     labs(x="ABV", y = "Density", title = "ABV Density Plot", 
          caption = "The mean is represented by the dashed")
 
+table1::table1(~ABV, data = beerbrew)
 ```
 
 Question 7: Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.  Make your best judgment of a relationship and EXPLAIN your answer.
@@ -453,7 +457,9 @@ beers_IPAALE_NA_Z = data.frame(ZABV = scale(beers_IPAALE_NA$ABV), ZIBU = scale(b
 beers_IPAALE_PMM_Z = data.frame(ZABV = scale(beers_IPAALE_PMM$ABV.pmm.imputed), ZIBU = scale(beers_IPAALE_PMM$IBU.pmm.imputed), Class = beers_IPAALE_PMM$Class)
 beers_IPAALE_CLASS_Z = data.frame(ZABV = scale(beers_IPAALE_CLASS$ABV.class.imputed), ZIBU = scale(beers_IPAALE_CLASS$ABV.class.imputed), Class = beers_IPAALE_CLASS$Class)
 
-#KNN - Omit NA
+```
+#KNN - This model omits NA values and loops to find average confusion matrix parameters over iterations and plots for optimal k value. See comments after plots where single confusion matrix created using optimal k
+```{r}
 set.seed(877)
 iterations = 500
 numks = 60
@@ -487,13 +493,68 @@ MeanAcc = colMeans(masterAcc)
 MeanSens = colMeans(masterSens)
 MeanSpec = colMeans(masterSpec)
 
-plot(seq(1,numks,1),MeanAcc, type = "l")
+plot(seq(1,numks,1),MeanAcc, type = "l",xlab="k",ylab="Mean Accuracy",main="Optimal k for max Accuracy",sub="NA values omitted")
 plot(seq(1,numks,1),MeanSens, type = "l")
 plot(seq(1,numks,1),MeanSpec, type = "l")
 
+#plots show k=1 to maximize the mean accuracy, sensitivity and specificity. Create Confusion Matrix for k=1
+classifications = knn(knn_train_beers_NA[,1:2],knn_test_beers_NA[,1:2],knn_train_beers_NA$Class,k=1,prob = TRUE)
+    table(knn_test_beers_NA$Class,classifications)
+    CM = confusionMatrix(table(knn_test_beers_NA$Class,classifications))
+    CM
 
+draw_confusion_matrix <- function(cm,Class1,Class2) {
 
-#KNN - Omit NA - Scale ABV/IBU
+  layout(matrix(c(1,1,2)))
+  par(mar=c(2,2,2,2))
+  plot(c(100, 345), c(300, 450), type = "n", xlab="", ylab="", xaxt='n', yaxt='n')
+  title('CONFUSION MATRIX', cex.main=2)
+
+  # create the matrix 
+  rect(150, 430, 240, 370, col='#3F97D0')
+  text(195, 435, Class1, cex=1.2)
+  rect(250, 430, 340, 370, col='#F7AD50')
+  text(295, 435, Class2, cex=1.2)
+  text(125, 370, 'Predicted', cex=1.3, srt=90, font=2)
+  text(245, 450, 'Actual', cex=1.3, font=2)
+  rect(150, 305, 240, 365, col='#F7AD50')
+  rect(250, 305, 340, 365, col='#3F97D0')
+  text(140, 400, Class1, cex=1.2, srt=90)
+  text(140, 335, Class2, cex=1.2, srt=90)
+
+  # add in the cm results 
+  res <- as.numeric(cm$table)
+  text(195, 400, res[1], cex=1.6, font=2, col='white')
+  text(195, 335, res[2], cex=1.6, font=2, col='white')
+  text(295, 400, res[3], cex=1.6, font=2, col='white')
+  text(295, 335, res[4], cex=1.6, font=2, col='white')
+  
+  # add in the specifics 
+  plot(c(100, 0), c(100, 0), type = "n", xlab="", ylab="", main = "DETAILS", xaxt='n', yaxt='n')
+  text(10, 85, names(cm$byClass[1]), cex=1.2, font=2)
+  text(10, 70, round(as.numeric(cm$byClass[1]), 3), cex=1.2)
+  text(30, 85, names(cm$byClass[2]), cex=1.2, font=2)
+  text(30, 70, round(as.numeric(cm$byClass[2]), 3), cex=1.2)
+  text(50, 85, names(cm$byClass[5]), cex=1.2, font=2)
+  text(50, 70, round(as.numeric(cm$byClass[5]), 3), cex=1.2)
+  text(70, 85, names(cm$byClass[6]), cex=1.2, font=2)
+  text(70, 70, round(as.numeric(cm$byClass[6]), 3), cex=1.2)
+  text(90, 85, names(cm$byClass[7]), cex=1.2, font=2)
+  text(90, 70, round(as.numeric(cm$byClass[7]), 3), cex=1.2)
+
+  # add in the accuracy information 
+  text(30, 35, names(cm$overall[1]), cex=1.5, font=2)
+  text(30, 20, round(as.numeric(cm$overall[1]), 3), cex=1.4)
+  text(70, 35, names(cm$overall[2]), cex=1.5, font=2)
+  text(70, 20, round(as.numeric(cm$overall[2]), 3), cex=1.4)
+}  
+
+draw_confusion_matrix(CM,"Ale","IPA")
+```
+
+#KNN - This model omits NA values then scales ABV/IBU parameters to reduce leverage of nearest neighbor distances due to differing scales. Then it loops to find average confusion matrix parameters over iterations and plots for optimal k value. See comments after plots where single confusion matrix created using optimal k
+
+```{r}
 set.seed(877)
 iterations = 500
 numks = 60
@@ -531,8 +592,17 @@ plot(seq(1,numks,1),MeanAcc, type = "l")
 plot(seq(1,numks,1),MeanSens, type = "l")
 plot(seq(1,numks,1),MeanSpec, type = "l")
 
+#optimal k for maximizing accuracy is 17. Note that this accuracy is lower than the method above where values were not scaled
+classifications = knn(knn_train_beers_NA_Z[,1:2],knn_test_beers_NA_Z[,1:2],knn_train_beers_NA_Z$Class,k=17,prob = TRUE)
+    table(knn_test_beers_NA_Z$Class,classifications)
+    CM = confusionMatrix(table(knn_test_beers_NA_Z$Class,classifications))
+    CM
 
-#KNN - PMM
+```
+
+#KNN - Unlike above models where NA values were omitted, this model uses the imputed IBU and ABV values using the Redictive Mean Matching (PMM) discussed in sections above.
+
+```{r}
 set.seed(877)
 iterations = 500
 numks = 60
@@ -569,9 +639,12 @@ plot(seq(1,numks,1),MeanAcc, type = "l")
 plot(seq(1,numks,1),MeanSens, type = "l")
 plot(seq(1,numks,1),MeanSpec, type = "l")
 
-
+#max accuracy <80% underperforms omitting NA's which makes sense. The PMM imputation used IBU distribution for all beers without focusing on IBU for Ale vs. IPA
+```
 
 #KNN - PMM - Scale ABV/IBU
+
+```{r}
 set.seed(877)
 iterations = 500
 numks = 60
@@ -606,13 +679,11 @@ MeanSpec = colMeans(masterSpec)
 plot(seq(1,numks,1),MeanAcc, type = "l")
 plot(seq(1,numks,1),MeanSens, type = "l")
 plot(seq(1,numks,1),MeanSpec, type = "l")
-
-
-
-
-
+```
 
 #KNN - CLASS
+
+```{r}
 set.seed(877)
 iterations = 500
 numks = 60
@@ -649,9 +720,12 @@ plot(seq(1,numks,1),MeanAcc, type = "l")
 plot(seq(1,numks,1),MeanSens, type = "l")
 plot(seq(1,numks,1),MeanSpec, type = "l")
 
-
+#max accuracy of 0.913 still lower than original method omitting NA's
+```
 
 #KNN - CLASS - Scale ABV/IBU
+
+```{r}
 set.seed(877)
 iterations = 500
 numks = 60
@@ -707,24 +781,20 @@ StateData %>% ggplot(mapping=aes(y=Gallons.of.Ethanol.Per.Capita, x=Breweries.pe
 
 StateData %>% ggplot(mapping=aes(y=Gallons.of.Ethanol.Per.Capita, x=Breweries.percapita)) + geom_point(size=0.5, position="jitter")+ labs(title="Breweries Per Capita Rank vs. Consumption Per Capita")
 
+StateData["Breweries_v_Consumption"]=StateData$Gallons.of.Ethanol.Per.Capita / StateData$Breweries #*StateData$pop.2019
+
+StateMapData["Breweries_v_Consumption"]=StateMapData$Gallons.of.Ethanol.Per.Capita / StateMapData$Breweries #* StateMapData$pop.2019
+
 ggplot(StateMapData, aes(x=long,y=lat,group=group))+
-  geom_polygon(aes(fill=ABV.class.median))+
+  geom_polygon(aes(fill=Breweries_v_Consumption))+
   geom_path()+ 
-  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Median ABV by State")+
-coord_map()
+  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Consumption / Brewery Count")+
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) + theme(axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + theme(axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(), panel.background = element_blank()) +coord_map()
 ```
 
-
-
-For instance now you can use the mapping set to plot many variables rather than recreating, like this:
+Session Information
 
 ```{r}
-
-
-ggplot(StateMapData, aes(x=long,y=lat,group=group))+
-  geom_polygon(aes(fill=ABV.class.median))+
-  geom_path()+ 
-  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Median ABV by State")+
-coord_map()
+sessionInfo()
 ```
 
