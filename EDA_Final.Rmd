@@ -465,11 +465,11 @@ masterSpec = matrix(nrow = iterations, ncol = numks)
 
 for(j in 1:iterations)
 {
-  beerbrew_sample_NA <- sample(1:dim(beers_IPAALE_NA)[1],round(splitpale * dim(beers_IPAALE_NA)[1]))
+  beerbrew_sample_NA <- sample(1:dim(beers_IPAALE_NA)[1],round(splitPerc * dim(beers_IPAALE_NA)[1]))
   knn_train_beers_NA <- beers_IPAALE_NA[beerbrew_sample_NA,]
   knn_test_beers_NA <- beers_IPAALE_NA[-beerbrew_sample_NA,]
-  knn_train_beers_NA = na.omit(knn_train_beers_na)
-  knn_test_beers_NA = na.omit(knn_test_beers_na)
+  knn_train_beers_NA = na.omit(knn_train_beers_NA)
+  knn_test_beers_NA = na.omit(knn_train_beers_NA)
 
   for(i in 1:numks)
   {
@@ -505,7 +505,7 @@ masterSpec = matrix(nrow = iterations, ncol = numks)
 
 for(j in 1:iterations)
 {
-  beerbrew_sample_NA_Z <- sample(1:dim(beers_IPAALE_NA_Z)[1],round(splitpale * dim(beers_IPAALE_NA_Z)[1]))
+  beerbrew_sample_NA_Z <- sample(1:dim(beers_IPAALE_NA_Z)[1],round(splitPerc * dim(beers_IPAALE_NA_Z)[1]))
   knn_train_beers_NA_Z <- beers_IPAALE_NA_Z[beerbrew_sample_NA_Z,]
   knn_test_beers_NA_Z <- beers_IPAALE_NA_Z[-beerbrew_sample_NA_Z,]
   knn_train_beers_NA_Z = na.omit(knn_train_beers_NA_Z)
@@ -544,7 +544,7 @@ masterSpec = matrix(nrow = iterations, ncol = numks)
 
 for(j in 1:iterations)
 {
-  beerbrew_sample_PMM <- sample(1:dim(beers_IPAALE_PMM)[1],round(splitpale * dim(beers_IPAALE_PMM)[1]))
+  beerbrew_sample_PMM <- sample(1:dim(beers_IPAALE_PMM)[1],round(splitPerc * dim(beers_IPAALE_PMM)[1]))
   knn_train_beers_PMM <- beers_IPAALE_PMM[beerbrew_sample_PMM,]
   knn_test_beers_PMM <- beers_IPAALE_PMM[-beerbrew_sample_PMM,]
   
@@ -583,7 +583,7 @@ masterSpec = matrix(nrow = iterations, ncol = numks)
 
 for(j in 1:iterations)
 {
-  beerbrew_sample_PMM_Z <- sample(1:dim(beers_IPAALE_PMM_Z)[1],round(splitpale * dim(beers_IPAALE_PMM_Z)[1]))
+  beerbrew_sample_PMM_Z <- sample(1:dim(beers_IPAALE_PMM_Z)[1],round(splitPerc * dim(beers_IPAALE_PMM_Z)[1]))
   knn_train_beers_PMM_Z <- beers_IPAALE_PMM_Z[beerbrew_sample_PMM_Z,]
   knn_test_beers_PMM_Z <- beers_IPAALE_PMM_Z[-beerbrew_sample_PMM_Z,]
   
@@ -624,7 +624,7 @@ masterSpec = matrix(nrow = iterations, ncol = numks)
 
 for(j in 1:iterations)
 {
-  beerbrew_sample_CLASS <- sample(1:dim(beers_IPAALE_CLASS)[1],round(splitpale * dim(beers_IPAALE_CLASS)[1]))
+  beerbrew_sample_CLASS <- sample(1:dim(beers_IPAALE_CLASS)[1],round(splitPerc * dim(beers_IPAALE_CLASS)[1]))
   knn_train_beers_CLASS <- beers_IPAALE_CLASS[beerbrew_sample_CLASS,]
   knn_test_beers_CLASS <- beers_IPAALE_CLASS[-beerbrew_sample_CLASS,]
   
@@ -663,7 +663,7 @@ masterSpec = matrix(nrow = iterations, ncol = numks)
 
 for(j in 1:iterations)
 {
-  beerbrew_sample_CLASS_Z <- sample(1:dim(beers_IPAALE_CLASS_Z)[1],round(splitpale * dim(beers_IPAALE_CLASS_Z)[1]))
+  beerbrew_sample_CLASS_Z <- sample(1:dim(beers_IPAALE_CLASS_Z)[1],round(splitPerc * dim(beers_IPAALE_CLASS_Z)[1]))
   knn_train_beers_CLASS_Z <- beers_IPAALE_CLASS_Z[beerbrew_sample_CLASS_Z,]
   knn_test_beers_CLASS_Z <- beers_IPAALE_CLASS_Z[-beerbrew_sample_CLASS_Z,]
   
