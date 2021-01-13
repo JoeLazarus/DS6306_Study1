@@ -603,7 +603,7 @@ MeanAcc = colMeans(masterAcc)
 MeanSens = colMeans(masterSens)
 MeanSpec = colMeans(masterSpec)
 
-plot(seq(1,numks,1),MeaPMMcc, type = "l")
+plot(seq(1,numks,1),MeanAcc, type = "l")
 plot(seq(1,numks,1),MeanSens, type = "l")
 plot(seq(1,numks,1),MeanSpec, type = "l")
 
