@@ -190,6 +190,12 @@ Add external data and features to the State level tables including, consumption,
 ```{r}
 #load beer consumption per capita data
 per.capita <-  read.csv("https://github.com/rickfontenot/DS6306_Study1/raw/main/NIH_per_capita.csv", header = TRUE)
+colnames(per.capita)[1] = "Rank.percapita"
+
+
+#load beer total consumption
+total.consumption <-  read.csv("https://github.com/rickfontenot/DS6306_Study1/raw/main/NIH_total_consumption.csv", header = TRUE)
+colnames(total.consumption)[1] = "Rank.total"
 
 #load census population data
 census2019 <-  read.csv("https://raw.githubusercontent.com/rickfontenot/DS6306_Study1/main/nst-est2019.csv", header = TRUE)
@@ -208,6 +214,10 @@ census2019$State <- str_replace_all(census2019$State, "^\\.", "")
 
 #Merge Consumption and population data
 consumption_pop <- merge(per.capita,census2019)
+ 
+total.consumption$State[total.consumption$State == "Dist. of Columb."] <- "District of Columbia"
+  
+consumption_pop <- merge(consumption_pop,total.consumption,by="State")
 
 #Add state abbreviations to merge with State Data Frame
 lookup = data.frame(abb = state.abb, State = state.name) #makes a data frame with State name and abbreviation.
@@ -222,8 +232,16 @@ temp <- merge(consumption_pop,lookup)
 colnames(StateData)[1] = "abb"
 StateData$abb <- trimws(StateData$abb)
 
-StateData <- merge(StateData,temp, all=T)
-view(StateData)
+StateData <- merge(StateData,temp,by="abb",all=T)
+StateData$Million_Gallons_Overall = as.numeric(StateData$Million_Gallons_Overall)
+
+StateData$pop.2019 <- str_replace_all(StateData$pop.2019, ",", "")
+StateData$pop.2019 <- as.numeric(StateData$pop.2019)
+
+#calculate #Breweries per capita
+StateData["Breweries.percapita"] = StateData$Breweries / (StateData$pop.2019/1000000)
+
+head(StateData)
 ```
 
 Create a State Mapping data frame so that all summary statistics can be geographically plotted
@@ -677,7 +695,23 @@ plot(seq(1,numks,1),MeanSpec, type = "l")
 Question 9: Knock their socks off!  Find one other useful inference from the data that you feel Budweiser may be able to find value in.  You must convince them why it is important and back up your conviction with appropriate statistical evidence. 
 
 ```{r}
+StateData %>% ggplot(mapping=aes(y=Rank.percapita, x=Million_Gallons_Overall)) + geom_point(size=0.5, position="jitter")+  labs(title="Total Consumption vs. Per Capita")
 
+StateData %>% ggplot(mapping=aes(y=Million_Gallons_Overall, x=Breweries)) + geom_point(size=0.5, position="jitter")+  labs(title="Total Consumption vs. Number of Breweries")
+
+StateData %>% ggplot(mapping=aes(y=Gallons.of.Ethanol.Per.Capita, x=Breweries)) + geom_point(size=0.5, position="jitter")+ ggrepel::geom_text_repel(label=StateData$abb) + labs(title="Per Capita Consumption vs. Number of Breweries")
+
+StateData %>% ggplot(mapping=aes(y=Rank.percapita, x=Rank.total)) + geom_point(size=0.5, position="jitter")+ ggrepel::geom_text_repel(label=StateData$abb) + labs(title="Per Capita Rank vs. Total Consumption Rank")
+
+StateData %>% ggplot(mapping=aes(y=Gallons.of.Ethanol.Per.Capita, x=Breweries.percapita)) + geom_point(size=0.5, position="jitter")+ ggrepel::geom_text_repel(label=StateData$abb) + labs(title="Breweries Per Capita Rank vs. Consumption Per Capita")
+
+StateData %>% ggplot(mapping=aes(y=Gallons.of.Ethanol.Per.Capita, x=Breweries.percapita)) + geom_point(size=0.5, position="jitter")+ labs(title="Breweries Per Capita Rank vs. Consumption Per Capita")
+
+ggplot(StateMapData, aes(x=long,y=lat,group=group))+
+  geom_polygon(aes(fill=ABV.class.median))+
+  geom_path()+ 
+  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Median ABV by State")+
+coord_map()
 ```
 
 
