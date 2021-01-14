@@ -1,33 +1,22 @@
 # BeerAnalysis 
 
-created by * [Rick Fontenot]('https://github.com/rickfontenot/DS6306_Study1'), * [Jason Herbaugh](https://github.com/jherbaugh) * [Joseph Lazarus](https://github.com/JoeLazarus)
-=======
-created by [Rick Fontenot](https://github.com/rickfontenot), [Jason Herbaugh](https://github.com/jherbaugh) [Joseph Lazarus](https://github.com/JoeLazarus)
+created by * [Rick Fontenot]('https://github.com/rickfontenot/DS6306_Study1') * [Jason Herbaugh](https://github.com/jherbaugh) * [Joseph Lazarus](https://github.com/JoeLazarus)
 
 ## Purpose
 
-Case Study of U.S. craft beers. The Client Budweiser hired our team to conduct specific analysis and anticipated new questions of expanding market share.
+The Client, "Budweiser," hired our team to conduct specific analysis and anticipated new questions of expanding market share.
 
 ## YouTube Video
 
-<<<<<<< HEAD
 * [Rick's Youtube Video](www.youtube.com) 
 * [Jason's Youtube Video](www.youtube.com) 
 * [Joe's Youtube Video](www.youtube.com)
-=======
-* [Rick's Youtube Video](www.youtube.com) - Fill in your youtube link here and add a comment
-* [Jason's Youtube Video](www.youtube.com) - Fill in your youtube link here and add a comment
-* [Joe's Youtube Video](www.youtube.com)- Fill in your youtube link here and add a comment
->>>>>>> 524a1a69a3a490b9f80558121ce2ea93351b5297
 
 ## Presentations
 
 * [Beer Analysis EDA Presentation](https://github.com/rickfontenot/DS6306_Study1/blob/main/Case%20Study%201%20EDA.ppt.zip) - Zip folder containing Power Point Presentation covering Exploratory Data Analysis Directed from Client.
-<<<<<<< HEAD
-* [Beer Analysis Final Presentation](GitHubUrl) - Power Point Presentation covering the questions of Interest from our EDA as well as additional insights.
-=======
-* [Beer Analysis Final Presentation](GitHubUrl) update when finished - Power Point Presentation covering the questions of Interest from our EDA as well as additional insights.
->>>>>>> 524a1a69a3a490b9f80558121ce2ea93351b5297
+
+* [Beer Analysis Final Presentation](https://github.com/rickfontenot/DS6306_Study1/blob/main/Budweiser%20Presentation.ppt.zip) - Power Point Presentation covering the questions of Interest from our EDA as well as additional insights.
 
 ## Data
 The Data Sets
@@ -63,7 +52,7 @@ The Data Sets
 9.  Performed market analysis highlight under developed craft brew markets within the United States that have the greatest potential to gain market share. As well as potential demand for Budweiser Brewery Brewery Experience Sites. 
 
 ### Details 
-The primary focus of this project is to display skill in each step of the Data Science Process; 
+The primary focus of this project is to display skill in each step of the **Data Science Process**; 
 1. Define the Goal 
 2. Get the Data 
 3. Clean the Data
@@ -72,7 +61,7 @@ The primary focus of this project is to display skill in each step of the Data S
 6. Deploy Machine Learning
 7. Iterate ∞
 
-in order to **Interperate and Communicate** Findings with stack holders. 
+in order to **Interperate and Communicate** Findings with stake holders. 
 
 Based on the analysis, Colorado and California are the top two states which have the most breweries. Colorado at number 1, with 47 breweries. 
 
@@ -91,7 +80,7 @@ The [CodeBook]('https://github.com/rickfontenot/DS6306_Study1/blob/main/Case%20S
 
 ## Contributing
 
-Don't 
+Don't. Project End of Life is January 16, 2021
 
 ## Authors
 
