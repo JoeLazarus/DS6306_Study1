@@ -785,11 +785,33 @@ StateData["Breweries_v_Consumption"]=StateData$Gallons.of.Ethanol.Per.Capita / S
 
 StateMapData["Breweries_v_Consumption"]=StateMapData$Gallons.of.Ethanol.Per.Capita / StateMapData$Breweries #* StateMapData$pop.2019
 
-ggplot(StateMapData, aes(x=long,y=lat,group=group))+
+plot<-ggplot(StateMapData, aes(x=long,y=lat,group=group))+
   geom_polygon(aes(fill=Breweries_v_Consumption))+
   geom_path()+ 
   scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Consumption / Brewery Count")+
-  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) + theme(axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + theme(axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(), panel.background = element_blank()) +coord_map()
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) + theme(axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + theme(axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(), panel.background = element_blank()) + coord_map()
+
+budweiser<-data.frame("city"="baldwinsville","lat"=43.1587 , "lon"=-76.3327)
+budweiser<-budweiser %>% add_row("city"="cartersville","lat"=34.1650972 , "lon"=-84.7999383)
+budweiser<-budweiser %>% add_row("city"="cartersville","lat"=34.1650972 , "lon"=-84.7999383)
+budweiser<-budweiser %>% add_row("city"="columbus","lat"=39.9611755 , "lon"=-82.9987942)
+budweiser<-budweiser %>% add_row("city"="losangeles","lat"=34.0522342 , "lon"=-118.2436849)
+budweiser<-budweiser %>% add_row("city"="newark","lat"=40.735657 , "lon"=-74.1723667)
+budweiser<-budweiser %>% add_row("city"="williamsburg","lat"=37.2707022 , "lon"=-76.7074571)
+budweiser<-budweiser %>% add_row("city"="fairfield","lat"=38.2493581 , "lon"=-122.0399663)
+budweiser<-budweiser %>% add_row("city"="fortcollins","lat"=40.5852602 , "lon"=-105.084423)
+budweiser<-budweiser %>% add_row("city"="houston","lat"=29.7632836 , "lon"=-95.3632715)
+budweiser<-budweiser %>% add_row("city"="jacksonville","lat"=30.3321838 , "lon"=-81.655651)
+budweiser<-budweiser %>% add_row("city"="merrimack","lat"=42.8650864 , "lon"=-71.4934004)
+budweiser<-budweiser %>% add_row("city"="stlouis","lat"=38.6272733 , "lon"=-90.1978889)
+budweiser
+
+
+gg <- ggplot() + geom_polygon(data=StateMapData, aes(x=long, y=lat, group=group, fill=Breweries_v_Consumption), color = "black", size=0.5) + geom_path()+ 
+  scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Consumption / Brewery Count")+
+  theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) + theme(axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + theme(axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(), panel.background = element_blank()) + coord_map()
+gg <- gg + geom_point(data=budweiser, aes(x=lon, y=lat),color="blue",size=4,shape=18)
+gg
 ```
 
 Session Information
