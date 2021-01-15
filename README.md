@@ -76,7 +76,7 @@ Data Scientists rarely work on perfect data and thus a large percentage of effor
 
 ## CodeBook
 
-The ['Codebook'](https://github.com/rickfontenot/DS6306_Study1/blob/main/Case%20Study%201%20Codebook.docx) - Provides additional details regarding the session information of the environment.
+The [Codebook](https://github.com/rickfontenot/DS6306_Study1/blob/main/Case%20Study%201%20Codebook.docx) - Provides additional details regarding the session information of the environment.
 
 ## Contributing
 
