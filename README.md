@@ -1,39 +1,26 @@
 # BeerAnalysis 
-<<<<<<< HEAD
-created by * [Rick Fontenot]('https://github.com/rickfontenot/DS6306_Study1'), * [Jason Herbaugh](https://github.com/jherbaugh) * [Joseph Lazarus](https://github.com/JoeLazarus)
-=======
-created by [Rick Fontenot](https://github.com/rickfontenot), [Jason Herbaugh](https://github.com/jherbaugh) [Joseph Lazarus](https://github.com/JoeLazarus)
->>>>>>> 524a1a69a3a490b9f80558121ce2ea93351b5297
+
+created by * [Rick Fontenot]('https://github.com/rickfontenot/DS6306_Study1') * [Jason Herbaugh](https://github.com/jherbaugh) * [Joseph Lazarus](https://github.com/JoeLazarus)
 
 ## Purpose
 
-Case Study of U.S. craft beers. The Client Budweiser hired our team to conduct specific analysis and anticipated new questions of expanding market share.
+The Client, "Budweiser," hired our team to conduct specific analysis and anticipated new questions of expanding market share.
 
 ## YouTube Video
 
-<<<<<<< HEAD
 * [Rick's Youtube Video](www.youtube.com) 
 * [Jason's Youtube Video](www.youtube.com) 
 * [Joe's Youtube Video](www.youtube.com)
-=======
-* [Rick's Youtube Video](www.youtube.com) - Fill in your youtube link here and add a comment
-* [Jason's Youtube Video](www.youtube.com) - Fill in your youtube link here and add a comment
-* [Joe's Youtube Video](www.youtube.com)- Fill in your youtube link here and add a comment
->>>>>>> 524a1a69a3a490b9f80558121ce2ea93351b5297
 
 ## Presentations
 
 * [Beer Analysis EDA Presentation](https://github.com/rickfontenot/DS6306_Study1/blob/main/Case%20Study%201%20EDA.ppt.zip) - Zip folder containing Power Point Presentation covering Exploratory Data Analysis Directed from Client.
-<<<<<<< HEAD
-* [Beer Analysis Final Presentation](GitHubUrl) - Power Point Presentation covering the questions of Interest from our EDA as well as additional insights.
-=======
-* [Beer Analysis Final Presentation](GitHubUrl) update when finished - Power Point Presentation covering the questions of Interest from our EDA as well as additional insights.
->>>>>>> 524a1a69a3a490b9f80558121ce2ea93351b5297
+
+* [Beer Analysis Final Presentation](https://github.com/rickfontenot/DS6306_Study1/blob/main/Budweiser%20Presentation.ppt.zip) - Power Point Presentation covering the questions of Interest from our EDA as well as additional insights.
 
 ## Data
 The Data Sets
 
-<<<<<<< HEAD
 * ['Beers.csv']('https://github.com/rickfontenot/DS6306_Study1/blob/main/Beers.csv')  The US craft beers data set
 
 * ['Breweries.csv']('https://github.com/rickfontenot/DS6306_Study1/blob/main/Breweries.csv') The US craft breweries data set
@@ -65,16 +52,16 @@ The Data Sets
 9.  Performed market analysis highlight under developed craft brew markets within the United States that have the greatest potential to gain market share. As well as potential demand for Budweiser Brewery Brewery Experience Sites. 
 
 ### Details 
-The primary focus of this project is to display skill in each step of the Data Science Process; 
+The primary focus of this project is to display skill in each step of the **Data Science Process**; 
 1. Define the Goal 
 2. Get the Data 
 3. Clean the Data
-4 Enrich the Data
-5 Find insights and visualize
-6 Deploy Machine Learning
-7 Iterate 
+4. Enrich the Data
+5. Find insights and visualize
+6. Deploy Machine Learning
+7. Iterate ∞
 
-in order to **Interperate and Communicate** Findings with stack holders. 
+in order to **Interperate and Communicate** Findings with stake holders. 
 
 Based on the analysis, Colorado and California are the top two states which have the most breweries. Colorado at number 1, with 47 breweries. 
 
@@ -90,34 +77,38 @@ Data Scientists rarely work on perfect data and thus a large percentage of effor
 ## CodeBook
 
 The [CodeBook]('https://github.com/rickfontenot/DS6306_Study1/blob/main/Case%20Study%2001%20Codebook.xlsx') - Provides additional details regarding the session information of the environment.
-=======
-* [Beers.csv](https://github.com/rickfontenot/DS6306_Study1/blob/main/Beers.csv) - The US craft beers data set
-
-* [Breweries.csv](https://github.com/rickfontenot/DS6306_Study1/blob/main/Breweries.csv) - The US craft breweries data set
-
-* [NIH_per_capita.csv](https://github.com/rickfontenot/DS6306_Study1/blob/main/NIH_per_capita.csv) - Data from National Institute from Health regarding per capita alcohol consumption broken down by state - [Source Website](https://vinepair.com/articles/map-states-drink-beer-america-2020/) 
-
-* [NIH_total_consumption.csv](https://github.com/rickfontenot/DS6306_Study1/blob/main/NIH_total_consumption.csv) - Data from National Institute from Health regarding total alcohol consumption broken down by state - [Source Website](https://vinepair.com/articles/map-states-drink-beer-america-2020/)
-
-* [nst.est2019.csv](https://github.com/rickfontenot/DS6306_Study1/blob/main/nst-est2019.csv) - Data from US Census estimations of state population 2019 - [Source Website](https://www.census.gov/data/datasets/time-series/demo/popest/2010s-state-total.html)
-
-## CodeBook
-
-The [CodeBook](https://github.com/rickfontenot/DS6306_Study1/) - (Updated URL) Provides additional details regarding the session information of the environment.
->>>>>>> 524a1a69a3a490b9f80558121ce2ea93351b5297
 
 ## Contributing
 
-Don't 
+Don't. Project End of Life is January 16, 2021
 
 ## Authors
 
 * **Rick Fontenot** - **Jason Herbaugh** - **Joseph Lazarus**
 
 ## License
-This project is licensed under the 
+MIT License
+
+Copyright (c) [2021] [Rick Fontento, Jason Herbaugh, Joseph Lazarus]
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
 
 ## Acknowledgements
 
 * Special thanks to Stack Overflow and anyone else's code used in this project. 
-
