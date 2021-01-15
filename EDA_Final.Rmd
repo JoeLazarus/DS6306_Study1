@@ -791,6 +791,7 @@ plot<-ggplot(StateMapData, aes(x=long,y=lat,group=group))+
   scale_fill_gradientn(colours=rev(heat.colors(10)),na.value="grey90")+ggtitle("Consumption / Brewery Count")+
   theme(axis.title.x=element_blank(), axis.text.x=element_blank(), axis.ticks.x=element_blank()) + theme(axis.title.y=element_blank(), axis.text.y=element_blank(), axis.ticks.y=element_blank()) + theme(axis.line = element_blank(), panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.border = element_blank(), panel.background = element_blank()) + coord_map()
 
+#add coordinates for existing Budweiser brewery experience locations to place on map
 budweiser<-data.frame("city"="baldwinsville","lat"=43.1587 , "lon"=-76.3327)
 budweiser<-budweiser %>% add_row("city"="cartersville","lat"=34.1650972 , "lon"=-84.7999383)
 budweiser<-budweiser %>% add_row("city"="cartersville","lat"=34.1650972 , "lon"=-84.7999383)
