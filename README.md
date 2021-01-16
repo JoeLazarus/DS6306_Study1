@@ -21,11 +21,11 @@ The Client, "Budweiser," hired our team to conduct specific analysis and anticip
 ## Data
 The Data Sets
 
-* ['Beers.csv']('https://github.com/rickfontenot/DS6306_Study1/blob/main/Beers.csv')  The US craft beers data set
+* ['Beers.csv'](https://github.com/rickfontenot/DS6306_Study1/blob/main/Beers.csv) - The US craft beers data set
 
-* ['Breweries.csv']('https://github.com/rickfontenot/DS6306_Study1/blob/main/Breweries.csv') The US craft breweries data set
+* ['Breweries.csv'](https://github.com/rickfontenot/DS6306_Study1/blob/main/Breweries.csv) -The US craft breweries data set
 
-* ['NIH_per_capita.csv'](https://github.com/rickfontenot/DS6306_Study1/blob/main/NIH_per_capita.csv) - * [Source]('https://vinepair.com/articles/map-states-drink-beer-america-2020/') - Data from National Institute from Health regarding per capita alcohol consumption broken down by state
+* ['NIH_per_capita.csv'](https://github.com/rickfontenot/DS6306_Study1/blob/main/NIH_per_capita.csv) - * [Source](https://vinepair.com/articles/map-states-drink-beer-america-2020/) - Data from National Institute from Health regarding per capita alcohol consumption broken down by state
 
 * ['NIH_total_consumption.csv'](GithubURL)  * [Source](https://vinepair.com/articles/map-states-drink-beer-america-2020/) - Data from National Institute from Health regarding total alcohol consumption broken down by state
 
@@ -76,7 +76,7 @@ Data Scientists rarely work on perfect data and thus a large percentage of effor
 
 ## CodeBook
 
-The [CodeBook]('https://github.com/rickfontenot/DS6306_Study1/blob/main/Case%20Study%2001%20Codebook.xlsx') - Provides additional details regarding the session information of the environment.
+The [Codebook](https://github.com/rickfontenot/DS6306_Study1/blob/main/Case%20Study%201%20Codebook.docx) - Provides additional details regarding the session information of the environment.
 
 ## Contributing
 
