@@ -29,7 +29,7 @@ The Data Sets
 
 * ['NIH_total_consumption.csv'](GithubURL)  * [Source](https://vinepair.com/articles/map-states-drink-beer-america-2020/) - Data from National Institute from Health regarding total alcohol consumption broken down by state
 
-* ['nst.est2019.csv'](https://github.com/rickfontenot/DS6306_Study1/blob/main/nst-est2019.csv) Source ('https://www.census.gov/data/datasets/time-series/demo/popest/2010s-state-total.html') Data from US Census estimations of state population 2019
+* ['nst.est2019.csv'](https://github.com/rickfontenot/DS6306_Study1/blob/main/nst-est2019.csv) Source (https://www.census.gov/data/datasets/time-series/demo/popest/2010s-state-total.html) Data from US Census estimations of state population 2019
 
 ## Analysis
 
