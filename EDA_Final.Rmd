@@ -1,4 +1,4 @@
-<<<<<<< HEAD
+
 ---
 title: "EDA Final"
 author: "Rick Fontenot"
@@ -10,7 +10,7 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-For this case study we assume that our audience is the CEO and CFO of Budweiser (our client) and that they only have had one class in statistics. They have hired us to answer 7 questions and beyond those general questions we will speculate / anticipate what may be of interest to them.
+For this case study we assume that our audience is the CEO and CFO of Budweiser (our client). They have hired us to answer 7 questions and beyond those general questions we will speculate / anticipate what may be of interest to them.
 
 We will start by importing the following data for analysis:
 
@@ -48,7 +48,6 @@ library(mapproj)
 library(stringr)
 library(ggplot2) 
 library(ggthemes)
-#install.packages("table1")
 library(table1)
 
 ```
@@ -113,9 +112,11 @@ tempData <- mice(beerbrew,m=5,maxit=50,meth='pmm',seed=500)
 xyplot(tempData,ABV ~ IBU,pch=18,cex=1)
 densityplot(tempData)
 
-beerbrew_imputed <- complete(tempData,1)
-head(beerbrew_imputed)
+#The distribution for all 5 iterations of replacement values mimic the distribution of the overall available data. But is this a good estimation for each particular beer with missing info?
 
+beerbrew_imputed <- complete(tempData,1)
+
+#confirming all missing values were replaced, no more NA's shown
 md.pattern(beerbrew_imputed)
 
 aggr_plot <- aggr(beerbrew_imputed, col=c('navyblue','red'), numbers=TRUE, sortVars=TRUE, labels=names(beerbrew_imputed), cex.axis=.7, gap=3, ylab=c("Histogram of missing data","Pattern"))
@@ -128,7 +129,6 @@ temp <- beerbrew_imputed %>% select(Beer_ID, ABV.pmm.imputed, IBU.pmm.imputed)
 
 beerbrew <- left_join(beerbrew, temp,by = "Beer_ID")
 
-beerbrew
 ```
 Method #2 for imputing values: Study distributions of IBU and ABV by Class of beer rather than using predictive mean for distribution of all beer style combined
 
@@ -143,7 +143,7 @@ geom_boxplot() +
 ggtitle("Boxplot of ABV by Beer Class") + 
 xlab("Class") + ylab("ABV") + coord_flip()
 
-#Instead of imputation method pmm, replace na with the mean IBU and ABV for the Class of beer it belongs too
+#The IBU and ABV distributions are distinctly different for each class of beer. Instead of imputation method pmm, replace na with the mean IBU and ABV for the Class of beer it belongs too
 
 impute.mean <- function(x) replace(x, is.na(x), mean(x, na.rm = TRUE))
 
@@ -187,7 +187,7 @@ StateData <- merge(StateData,Brewery.count)
 view(StateData)
 ```
 
-Add external data and features to the State level tables including, consumption, population, and consumption per capita
+Add external data and features to the State level tables including, consumption, population, and consumption per capita. This will be used to explore additional analysis beyond the questions Budweiser asked us.
 
 ```{r}
 #load beer consumption per capita data
@@ -277,10 +277,14 @@ ggplot(StateMapData, aes(x=long,y=lat,group=group))+
 
 ```
 
+Answer 1: Colorado has the most breweries with 47. Other than Colorado, states with most breweries are clustered along US border and coasts. The top 5 brewery count states account for 31% of total craft breweris in the US.
+
+
+
 Question 2: Merge beer data with the breweries data. Print the first 6 observations and the last six observations to check the merged file.  (RMD only, this does not need to be included in the presentation or the deck.)
 
 ```{r}
-#merge completed above, here we will print the first/last 6 obervations
+#merge completed in section of code above, here we will print the first/last 6 obervations
 
 head(beerbrew,6)
 tail(beerbrew,6)
@@ -320,6 +324,9 @@ imputed <- merge(imputed.IBU,imputed.ABV,all=T)
 imputed %>% ggplot(mapping=aes(y=IBU, x=ABV,color=Method)) + geom_point(size=0.5, position=position_jitter(width = 0.001, height = 1))+ geom_smooth(method="lm",se=FALSE,size=1)+ labs(title="Correlation between ABV and IBU")
 ```
 
+Answer 3: The PMM method of imputing mimcs the overall distribution of available data points but does not seem appropriate for each invidual missing point as it replaces with values not accurate for the type of beer that has missing values. The Class-mean method seems more appropriate and will be used for subsequent distribution analysis and summary statitistics. However it does not seema appropriate for relationship analysis, so we will omit NA's for correlations and models
+
+
 Question 4: Compute the median alcohol content and international bitterness unit for each state. Plot a bar chart to compare.
 
 ```{r}
@@ -333,6 +340,12 @@ StateData %>% ggplot(aes(x=reorder(abb, -ABV.class.median), y=ABV.class.median))
   labs(title = "Median ABV by State", y = "Median ABV",x= 'State')
 ```
 
+Answer 4: For states with sufficiently larger sample sizes median IBU in the mid-30’s. The two outlier states with high median IBU are small samples. They only have 2 beers per state, which happen to be high IBU styles. If they brewed more beers of multiple varieties, they would likely have median IBU more similar to the rest of states.
+
+Almost all states have a median ABV in the 5% to 6% Range. Utah, the one outlier state with low ABV has to do with a state law limiting the max ABV to 4%
+
+
+
 Question 5: Which state has the maximum alcoholic (ABV) beer? Which state has the most bitter (IBU) beer?
 
 ```{r}
@@ -344,6 +357,15 @@ max.ibu <- beerbrew %>% filter(IBU==max(beerbrew$IBU,na.rm=TRUE)) %>% select(Bee
 max.ibu
 #Answer Oregon, Bitter Bitch Imperial, IBU = 138
 ```
+
+Answer 5: Max ABV beer = 12.8% by Upslope Brewing Company, Colorado
+Lee Hill Series Vol. 5 - Belgian Style Quadrupel Ale
+Brewed with a select strain of Belgian yeast and traditional Belgian candy syrup, the beer matured over six months to mellow and soften its character.
+
+Max IBU Beer = 138 by Astoria Brewing Company, Oregon
+Bitter Bitch Imperial IPA
+A big IPA with a huge bite. Peoples Award Winner 3 Years running at the Spring Beer & Wine Festival, Portland, OR.
+
 
 Question 6: Comment on the summary statistics and distribution of the ABV variable.
 
@@ -381,6 +403,11 @@ ggplot(beerbrew, aes(x=ABV)) +
 
 table1::table1(~ABV, data = beerbrew)
 ```
+
+Answer 6: ABV distribution is relatively normal with a right skew
+IPA’s contribute most to the right tail of high ABV values, explains mean > median
+The minimum value is a non-alcoholic beer, excluding this one reduces range to 2.7% - 12.8%
+
 
 Question 7: Is there an apparent relationship between the bitterness of the beer and its alcoholic content? Draw a scatter plot.  Make your best judgment of a relationship and EXPLAIN your answer.
 
@@ -427,9 +454,12 @@ beerbrew %>% filter(Class == "IPA" | Class == "Ale") %>% ggplot(mapping=aes(y=IB
 
 ```
 
-Question 8: Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN classification to investigate this relationship.  Provide statistical evidence one way or the other. You can of course assume your audience is comfortable with percentages … KNN is very easy to understand conceptually.
+Answer 7: ABV and IBU are positively correlated with 45% of the variation in ABV explained by IBU
+The IBU/ABV relationship is different or shifted for different styles of beer
+For similar alcohol level, IPA is more bitter than Ale
 
-In addition, while you have decided to use KNN to investigate this relationship (KNN is required) you may also feel free to supplement your response to this question with any other methods or techniques you have learned.  Creativity and alternative solutions are always encouraged.  
+
+Question 8: Budweiser would also like to investigate the difference with respect to IBU and ABV between IPAs (India Pale Ales) and other types of Ale (any beer with “Ale” in its name other than IPA).  You decide to use KNN classification to investigate this relationship.  Provide statistical evidence one way or the other. 
 
 ```{r}
 
@@ -766,7 +796,19 @@ plot(seq(1,numks,1),MeanSpec, type = "l")
 
 ```
 
-Question 9: Knock their socks off!  Find one other useful inference from the data that you feel Budweiser may be able to find value in.  You must convince them why it is important and back up your conviction with appropriate statistical evidence. 
+Answer 8: We looked at multiple KNN models with three different approaches on values: omit NA's, PMM imputed missing values, Class-mean imputed missing values. Using imputed values lowered accuracy which makes some sense since they are not true IBU/ABV paired data. Omitting NA's produced the highest accuracy.
+
+Since the range of values for ABV and IBU are so different, we looked at scaling these axes for potential improvement to model accuracy. In this case, scaling did not improve our models.
+
+Finally we ran loops to plot the optimal k (number of nearest neighbors for classification) and observed k=1 to provide the highest accuracy. Using k=1 could  cause concerns of overfitting the model, so we looped through 500 iterations of reassignments to the train and test data sets. The mean accuracy was still highest with k=1 leading us to conclude it was not an abberation based on one assignment of the training set.
+
+Our best model can classify Ales vs. IPA with 95% accuracy using their IBU and ABV measurements alone. If overfitting is a concern, higher values of k still produce accuracy of 85% which is still a good model.
+
+
+
+Question 9: Knock their socks off!  Find one other useful inference from the data that you feel Budweiser may be able to find value in.  You must convince them why it is important and back up your conviction with appropriate statistical evidence.
+
+We will analyze alcohol consumption data as a proxy for demand and consumer interest in beer vs. the location of existing breweries to look for opportunities of high demand with lower supply.
 
 ```{r}
 StateData %>% ggplot(mapping=aes(y=Rank.percapita, x=Million_Gallons_Overall)) + geom_point(size=0.5, position="jitter")+  labs(title="Total Consumption vs. Per Capita")
@@ -814,6 +856,16 @@ gg <- ggplot() + geom_polygon(data=StateMapData, aes(x=long, y=lat, group=group,
 gg <- gg + geom_point(data=budweiser, aes(x=lon, y=lat),color="blue",size=4,shape=18)
 gg
 ```
+
+Answer 9: Some states with the highest alcohol consumption rate have very few breweries.
+There may be an opportunity to launch new beer with a brewery in these areas to create regional pride and increase demand for a new budweiser beer in a ripe market 
+
+Preliminary Analysis shows some states such as Nevada, South Dakota and North Dakota warrant further investigation in order to expand Budweiser’s share of craft brew market.
+These states demonstrate potential to support Budweiser Brewery Experiential Site 
+
+We'd recommend adding beer sales data provided by Budweiser so we can refine market analysis with more precise data. We would also like to include consumer taste preference for Beer with respect to IBU / ABV.
+
+
 
 Session Information
 
