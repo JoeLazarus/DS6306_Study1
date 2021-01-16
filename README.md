@@ -8,7 +8,7 @@ The Client, "Budweiser," hired our team to conduct specific analysis and anticip
 
 ## YouTube Video
 
-* [Rick's Youtube Video](www.youtube.com) 
+* [Rick's Youtube Video](https://www.youtube.com/watch?v=KrOsserLdto) 
 * [Jason's Youtube Video](www.youtube.com) 
 * [Joe's Youtube Video](www.youtube.com)
 
