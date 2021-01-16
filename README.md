@@ -18,6 +18,10 @@ The Client, "Budweiser," hired our team to conduct specific analysis and anticip
 
 * [Beer Analysis Final Presentation](https://github.com/rickfontenot/DS6306_Study1/blob/main/Budweiser%20Presentation.ppt.zip) - Power Point Presentation covering the questions of Interest from our EDA as well as additional insights.
 
+## Knit File in rendered html page
+
+* [Knitted presentation](https://htmlpreview.github.io/?https://github.com/rickfontenot/DS6306_Study1/blob/gh-pages/EDA_Final.html)
+
 ## Data
 The Data Sets
 
