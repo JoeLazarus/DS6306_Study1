@@ -25,7 +25,7 @@ The Data Sets
 
 * ['Breweries.csv'](https://github.com/rickfontenot/DS6306_Study1/blob/main/Breweries.csv) -The US craft breweries data set
 
-* ['NIH_per_capita.csv'](https://github.com/rickfontenot/DS6306_Study1/blob/main/NIH_per_capita.csv) - * [Source]('https://vinepair.com/articles/map-states-drink-beer-america-2020/') - Data from National Institute from Health regarding per capita alcohol consumption broken down by state
+* ['NIH_per_capita.csv'](https://github.com/rickfontenot/DS6306_Study1/blob/main/NIH_per_capita.csv) - * [Source](https://vinepair.com/articles/map-states-drink-beer-america-2020/) - Data from National Institute from Health regarding per capita alcohol consumption broken down by state
 
 * ['NIH_total_consumption.csv'](GithubURL)  * [Source](https://vinepair.com/articles/map-states-drink-beer-america-2020/) - Data from National Institute from Health regarding total alcohol consumption broken down by state
 
