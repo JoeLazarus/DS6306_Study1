@@ -1,6 +1,6 @@
 # BeerAnalysis 
 
-created by * [Rick Fontenot]('https://github.com/rickfontenot/DS6306_Study1') * [Jason Herbaugh](https://github.com/jherbaugh) * [Joseph Lazarus](https://github.com/JoeLazarus)
+created by * [Rick Fontenot](https://github.com/rickfontenot/DS6306_Study1) * [Jason Herbaugh](https://github.com/jherbaugh) * [Joseph Lazarus](https://github.com/JoeLazarus)
 
 ## Purpose
 
@@ -10,7 +10,7 @@ The Client, "Budweiser," hired our team to conduct specific analysis and anticip
 
 * [Rick's Youtube Video](https://www.youtube.com/watch?v=KrOsserLdto) 
 * [Jason's Youtube Video](www.youtube.com) 
-* [Joe's Youtube Video](www.youtube.com)
+* [Joe's Youtube Video](https://youtu.be/Y4aXELzgHZ0)
 
 ## Presentations
 
