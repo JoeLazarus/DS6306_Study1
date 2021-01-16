@@ -9,7 +9,7 @@ The Client, "Budweiser," hired our team to conduct specific analysis and anticip
 ## YouTube Video
 
 * [Rick's Youtube Video](https://www.youtube.com/watch?v=KrOsserLdto) 
-* [Jason's Youtube Video](www.youtube.com) 
+* [Jason's Youtube Video](https://www.youtube.com/watch?v=iQFv4YB6I3c) 
 * [Joe's Youtube Video](https://youtu.be/Y4aXELzgHZ0)
 
 ## Presentations
@@ -76,7 +76,7 @@ Data Scientists rarely work on perfect data and thus a large percentage of effor
 
 ## CodeBook
 
-The [Codebook](https://github.com/rickfontenot/DS6306_Study1/blob/main/Case%20Study%201%20Codebook.docx) - Provides additional details regarding the session information of the environment.
+The [Codebook](https://github.com/rickfontenot/DS6306_Study1/blob/main/Case%20Study%201%20Codebook.docx) - describes the contents, structure, and layout of the craft beer data used in this project.
 
 ## Contributing
 
